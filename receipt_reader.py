@@ -49,7 +49,6 @@ def read_receipt(receipt):
     relative_path="Receipts\\receipt2.jpg"
     path=file_path+"\\"+relative_path
     pytesseract.pytesseract.tesseract_cmd = r'C:/Program Files/Tesseract-OCR/tesseract.exe'
-    #Image.open(path).show()
     image = cv2.imread(path)
 
     # Convert to grayscale
@@ -60,11 +59,10 @@ def read_receipt(receipt):
 
     # Optional: remove noise
     denoised = cv2.medianBlur(thresh, 3)
-
-    #print(pytesseract.image_to_string(Image.open(path),lang='eng'))
+    
     text = pytesseract.image_to_string(denoised,lang='eng')
-    #print(pytesseract.image_to_string(denoised,lang='eng'))
-    return text
+    lines = [line for line in text.splitlines() if line.strip()]
+    return lines
 
 if __name__ == '__main__':
     receipts, excluded = get_receipts()
@@ -76,3 +74,11 @@ if __name__ == '__main__':
         for receipt in receipts:
             print(receipt)
             text = read_receipt(receipt)
+            for line in text:
+               match = re.search(r"(.*)£(\d+\.\d{2})", line)
+               if match:
+                   item = match.group(1)
+                   price = match.group(2)
+                   logger.log_message(f"Item: {item}")
+                   logger.log_message(f"Price: {price}\n")
+               
