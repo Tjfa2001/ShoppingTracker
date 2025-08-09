@@ -3,7 +3,7 @@ import cv2
 from PIL import Image
 import os
 import re
-import logger
+import logger as logger
 
 def get_receipts():
 
@@ -46,7 +46,7 @@ def file_extension_check(receipt):
 def read_receipt(receipt):
     
     file_path=os.path.dirname(__file__)
-    relative_path="Receipts\\receipt2.jpg"
+    relative_path="..\\Receipts\\receipt2.jpg"
     path=file_path+"\\"+relative_path
     pytesseract.pytesseract.tesseract_cmd = r'C:/Program Files/Tesseract-OCR/tesseract.exe'
     image = cv2.imread(path)
