@@ -88,19 +88,33 @@ class receipt_reader:
         items = []
         items_dict = {}
 
-        for line in text:
-
+        for i, line in enumerate(text):
+               #print(line)
                match = self.item_search.search(line)
                if match:
     
                    payment = re.search(r"CARD",match.group(), re.IGNORECASE)
                    total_cost = self.total_search.search(match.group())
-                   total_discount = re.search(r"TOTAL DISCOUNT",match.group())
+                   total_discount = re.search(r"(TOTAL DISCOUNT\s*)(\d{1,2}.\d{1,2})",match.group())
                    
                    if total_discount:
+                       receipt_dict.update({"discount":f"{total_discount.group(2)}"})
                        break
                    elif not payment and not total_cost:
-                       items.append({"name":f"{match.group(1)}".strip(),"price":f"{match.group(2)}"})
+                       quantity_check = re.search(r"(\d{1,2})(\s?[xX]{1,2}\s*£\d{1,2}.\d{1,2})",line)
+                       weight_check_next = re.search(r"(\d{1,2}\.\d{1,3})(\s?kg\s?@\s?£\s?)(\d{1,2}\.\d{1,2})",text[i+1])
+                       weight_check_current = re.search(r"(\d{1,2}\.\d{1,3})(\s?kg\s?@\s?£\s?)(\d{1,2}\.\d{1,2})",line)
+
+                       if quantity_check:
+                           price = float(match.group(2)) / int(quantity_check.group(1))
+                           items.append({"name":f"{match.group(1).replace(quantity_check.group(),"")}".strip(),"price":f"{price}","quantity":f"{quantity_check.group(1)}"})
+                       elif weight_check_next:
+                           weight_bought = float(weight_check_next.group(1))
+                           items.append({"name":f"{match.group(1)}".strip(),"price":f"{match.group(2)}","weight":f"{weight_bought}","ppkg":f"{weight_check_next.group(3)}"})
+                       elif weight_check_current:
+                           continue
+                       else:
+                           items.append({"name":f"{match.group(1)}".strip(),"price":f"{match.group(2)}"})
                    else:
                        continue
 
@@ -121,7 +135,7 @@ class receipt_reader:
         items_dict.update({"items":items})
         receipt_dict.update(items_dict)
         json_receipt_nice = json.dumps(receipt_dict,indent=4,ensure_ascii=False).encode("utf-8")
-        #print(json_receipt_nice.decode())
+        print(json_receipt_nice.decode())
         json_receipt = json.dumps(receipt_dict)
         self.receipts.append(json_receipt)
 
@@ -159,7 +173,7 @@ if __name__ == '__main__':
                 reader.extract_items(text)
 
     
-
+    """
     #reading = sys.stdin.readline().strip()
     #print(f"Python got: {reading}")
     for receipt in reader.receipts:
@@ -167,4 +181,5 @@ if __name__ == '__main__':
         sys.stdout.flush()
 
     sys.stdout.close()
+    """
                
