@@ -6,15 +6,18 @@ import re
 import my_logger as logger
 import sys
 import json
+import file_handler as fh
 
 class receipt_reader:
 
     receipts = []
     logger = None
+    fh = None
 
     def __init__(self):
         self.compile_regex()
         self.logger = logger.Logger()
+        self.fh = fh.File_Handler()
 
     def get_receipts(self):
 
@@ -76,12 +79,18 @@ class receipt_reader:
         lines = [line for line in text.splitlines() if line.strip()]
         return lines
 
+    # Compiles the regex that will be used when extracting items
     def compile_regex(self):
         self.time_search = re.compile(r"(Time:\s+)(\d{2}:\d{2}:\d{2})")
         self.date_search = re.compile(r"(Date:\s+)(\d{2}\/\d{2}\/\d{2})")
         self.item_search = re.compile(r"(.*\s)(-?\d{1,3}\.\d{2})")
         self.total_search = re.compile(r"(TOTAL)(\s+)(\d{1,4}\.\d{2})")
+        self.payment_search = re.compile(r"CARD", re.IGNORECASE)
+        self.discount_search = re.compile(r"(TOTAL DISCOUNT\s*)(\d{1,2}.\d{1,2})")
+        self.quantity_check = re.compile(r"(\d{1,2})(\s?[xX]{1,2}\s*£\d{1,2}.\d{1,2})")
+        self.weight_check = re.compile(r"(\d{1,2}\.\d{1,3})(\s?kg\s?@\s?£\s?)(\d{1,2}\.\d{1,2})")
 
+    # Extracts the items from the receipt text
     def extract_items(self,text):
 
         receipt_dict = {}
@@ -89,58 +98,115 @@ class receipt_reader:
         items_dict = {}
 
         for i, line in enumerate(text):
-               #print(line)
+               
+               # Looks for any reference to price / cost
                match = self.item_search.search(line)
+
                if match:
-    
-                   payment = re.search(r"CARD",match.group(), re.IGNORECASE)
+
+                   # Looking for payment information to skip
+                   payment = self.payment_search.search(match.group())
+
+                   # Retrieves the total cost on the receipt
                    total_cost = self.total_search.search(match.group())
-                   total_discount = re.search(r"(TOTAL DISCOUNT\s*)(\d{1,2}.\d{1,2})",match.group())
+
+                   # Retrieves the total discount on the receipt
+                   total_discount = self.discount_search.search(match.group())
                    
                    if total_discount:
                        receipt_dict.update({"discount":f"{total_discount.group(2)}"})
                        break
-                   elif not payment and not total_cost:
-                       quantity_check = re.search(r"(\d{1,2})(\s?[xX]{1,2}\s*£\d{1,2}.\d{1,2})",line)
-                       weight_check_next = re.search(r"(\d{1,2}\.\d{1,3})(\s?kg\s?@\s?£\s?)(\d{1,2}\.\d{1,2})",text[i+1])
-                       weight_check_current = re.search(r"(\d{1,2}\.\d{1,3})(\s?kg\s?@\s?£\s?)(\d{1,2}\.\d{1,2})",line)
+                   
+                   elif total_cost:
+                       receipt_dict.update({"total":f"{total_cost.group(3)}"})
 
+                   elif not payment and not total_cost:
+                       
+                       quantity_check = self.quantity_check.search(line)
+                       
+                       weight_check_next = self.weight_check.search(text[i+1])
+                       
+                       weight_check_current = self.weight_check.search(line)
+
+                       # Checks whether there is a quantity given for the item bought
                        if quantity_check:
                            price = float(match.group(2)) / int(quantity_check.group(1))
-                           items.append({"name":f"{match.group(1).replace(quantity_check.group(),"")}".strip(),"price":f"{price}","quantity":f"{quantity_check.group(1)}"})
+                           items.append({"name":f"{match.group(1).replace(quantity_check.group(),"")}".strip(),
+                                         "price":f"{price}","quantity":f"{quantity_check.group(1)}"})
+                        
+                       # Checks whether there is a weight given for the item bought
                        elif weight_check_next:
                            weight_bought = float(weight_check_next.group(1))
-                           items.append({"name":f"{match.group(1)}".strip(),"price":f"{match.group(2)}","weight":f"{weight_bought}","ppkg":f"{weight_check_next.group(3)}"})
+                           items.append({"name":f"{match.group(1)}".strip(),
+                                         "price":f"{match.group(2)}",
+                                         "weight":f"{weight_bought}",
+                                         "ppkg":f"{weight_check_next.group(3)}"})
+                        
+                       # Checks whether the current item is just a weight, in which case skip
                        elif weight_check_current:
                            continue
+                       
+                       # In general, add the name and price only
                        else:
-                           items.append({"name":f"{match.group(1)}".strip(),"price":f"{match.group(2)}"})
+                           items.append({"name":f"{match.group(1)}".strip(),
+                                         "price":f"{match.group(2)}"})
                    else:
                        continue
 
-               date = re.search(r"(Date:\s+)(\d{2}\/\d{2}\/\d{2})",line)
+               # Looks for the date on the receipt 
+               date = self.date_search.search(line)
+               
                if date:
                    receipt_dict.update({"date":f"{date.group(2)}"})
 
+               # Looks for the time on the receipt 
                time = self.time_search.search(line)
 
                if time:
                    receipt_dict.update({"time":f"{time.group(2)}"})
 
+               # Looks for the total on the receipt
                total_cost = self.total_search.search(line)
 
                if total_cost:
                    receipt_dict.update({"total":f"{total_cost.group(3)}"})
 
+        # Constructs the dictionary for the receipt
         items_dict.update({"items":items})
         receipt_dict.update(items_dict)
+
+        # (For testing purposes only) Prints out the dictionary in JSON format
         json_receipt_nice = json.dumps(receipt_dict,indent=4,ensure_ascii=False).encode("utf-8")
         print(json_receipt_nice.decode())
+
+        # Adds the receipt to the list of the receipts to be processed
         json_receipt = json.dumps(receipt_dict)
         self.receipts.append(json_receipt)
 
+        return json_receipt
+
+    def check_totals(self,receipt_name,json_receipt):
+        #for receipt in self.receipts:
+
+            receipt = json.loads(json_receipt)
+            total_for_receipt = float(receipt["total"])
+            discount_for_receipt = receipt["discount"]
+            item_sum_for_receipt = 0
+
+            for item in receipt["items"]:
+
+                if 'quantity' in item:
+                    item_sum_for_receipt += float(item["price"])*float(item["quantity"])
+                else:
+                    item_sum_for_receipt += float(item["price"])
+
+            print(total_for_receipt,item_sum_for_receipt)
+            if round(total_for_receipt,2) == round(item_sum_for_receipt,2):
+                self.fh.write_to_file(receipt_name,receipt)
+
 if __name__ == '__main__':
 
+    re.escape
     """
     dict_test = {
         "name":"Thomas"
@@ -170,8 +236,8 @@ if __name__ == '__main__':
                 #print(receipt)
             #if receipt == 'lidl_receipt1.png':
                 text = reader.read_receipt(receipt)
-                reader.extract_items(text)
-
+                json_receipt = reader.extract_items(text)
+                reader.check_totals(receipt,json_receipt)
     
     """
     #reading = sys.stdin.readline().strip()
