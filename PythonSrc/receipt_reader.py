@@ -8,7 +8,7 @@ import sys
 import json
 import file_handler as fh
 
-class receipt_reader:
+class ReceiptReader:
 
     receipts = []
     logger = None
@@ -17,24 +17,35 @@ class receipt_reader:
     def __init__(self):
         self.compile_regex()
         self.logger = logger.Logger()
-        self.fh = fh.File_Handler()
+        self.fh = fh.FileHandler()
 
     def get_receipts(self):
 
         abspath = os.path.abspath(".")
         receipt_dir = os.path.join(abspath,r"ShoppingTracker\Receipts")
+        excluded_dir = os.path.join(abspath,r"ShoppingTracker\Excluded")
+        accepted_dir = os.path.join(abspath,r"ShoppingTracker\Accepted")
 
         receipts = []
         excluded_files = []
 
         for file in os.listdir(receipt_dir):
+            
+            receipt_loc = os.path.join(receipt_dir,file)
+
             pass_extension_check = self.file_extension_check(file)
             pass_openable_photo_check = self.open_photo_check(file,receipt_dir)
 
             if pass_extension_check and pass_openable_photo_check:
                 receipts.append(file)
+                accepted_loc = os.path.join(accepted_dir,file)
+                os.rename(receipt_loc,accepted_loc)
+
             else:
                 excluded_files.append(file)
+                
+                excluded_loc = os.path.join(excluded_dir,file)
+                os.rename(receipt_loc,excluded_loc)
 
         # Added this here for TESTING
         return receipts, excluded_files
@@ -61,7 +72,7 @@ class receipt_reader:
     def read_receipt(self,receipt):
     
         file_path=os.path.dirname(__file__)
-        relative_path="..\\Receipts\\" + receipt
+        relative_path="..\\Accepted\\" + receipt
         path=file_path+"\\"+relative_path
         pytesseract.pytesseract.tesseract_cmd = r'C:/Program Files/Tesseract-OCR/tesseract.exe'
         image = cv2.imread(path)
@@ -200,30 +211,12 @@ class receipt_reader:
                 else:
                     item_sum_for_receipt += float(item["price"])
 
-            print(total_for_receipt,item_sum_for_receipt)
             if round(total_for_receipt,2) == round(item_sum_for_receipt,2):
                 self.fh.write_to_file(receipt_name,receipt)
 
 if __name__ == '__main__':
 
-    re.escape
-    """
-    dict_test = {
-        "name":"Thomas"
-    }
-    dict_test.update({"age":23})
-    print(dict_test["name"])
-    print(dict_test["age"])
-    dict_test.update({"items":{
-        "ball":50,
-        "cat":50,
-        "hat":100
-    }})
-
-    j = json.dumps(dict_test,indent=3)
-    print(j)
-    """
-    reader = receipt_reader()
+    reader = ReceiptReader()
 
     valid_receipts, excluded = reader.get_receipts()
 

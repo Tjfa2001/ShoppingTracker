@@ -2,7 +2,7 @@ import os
 import json
 import re
 
-class File_Handler():
+class FileHandler():
 
     directory = None
 
@@ -16,5 +16,16 @@ class File_Handler():
         with open(os.path.join(self.directory,new_name),"w") as file:
             file.write(json.dumps(json_receipt,indent = 4))
 
+    def read_from_file(self,filename):
+
+        with open(os.path.join(self.directory,filename),"r") as file:
+            text = file.read()
+            return text
+
     def get_directory(self):
         self.directory = os.path.join(os.path.abspath("."),r"ShoppingTracker\ProcessedReceipts") 
+        
+
+if __name__ == '__main__':
+    fh = FileHandler()
+    fh.read_from_file("lidl_receipt1.json")
