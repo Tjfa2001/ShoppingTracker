@@ -50,6 +50,7 @@ class ReceiptReader:
         # Added this here for TESTING
         return receipts, excluded_files
 
+    # Checks whether the file can be opened
     def open_photo_check(self,file,dir):
         try:
             Image.open(os.path.join(dir,file))
@@ -59,21 +60,25 @@ class ReceiptReader:
             self.logger.log_message(f"File {file} failed image opening test")
         return False
 
-    def file_extension_check(self,receipt):
-        match = re.search(r'(.+)\.(jpg|jpeg|png)',receipt,re.IGNORECASE)
-        if match:
-            file_name = match.group()
-            self.logger.log_message(f"File {file_name} passed extension test")
+    # Chceks whether the file has the right extension for a photo
+    def file_extension_check(self,file):
+
+        right_extension = self.extension_check.search(file)
+
+        if right_extension:
+            self.logger.log_message(f"File {file} passed extension test")
             return True
         else:
-            self.logger.log_message(f"File {receipt} failed extension test")
+            self.logger.log_message(f"File {file} failed extension test")
             return False
 
+    # Reads the receipt provided to the file
     def read_receipt(self,receipt):
     
         file_path=os.path.dirname(__file__)
         relative_path="..\\Accepted\\" + receipt
         path=file_path+"\\"+relative_path
+
         pytesseract.pytesseract.tesseract_cmd = r'C:/Program Files/Tesseract-OCR/tesseract.exe'
         image = cv2.imread(path)
 
@@ -88,10 +93,12 @@ class ReceiptReader:
     
         text = pytesseract.image_to_string(denoised,lang='eng')
         lines = [line for line in text.splitlines() if line.strip()]
+        
         return lines
 
     # Compiles the regex that will be used when extracting items
     def compile_regex(self):
+        self.extension_check = re.compile(r'(.+)\.(jpg|jpeg|png)',re.IGNORECASE)
         self.time_search = re.compile(r"(Time:\s+)(\d{2}:\d{2}:\d{2})")
         self.date_search = re.compile(r"(Date:\s+)(\d{2}\/\d{2}\/\d{2})")
         self.item_search = re.compile(r"(.*\s)(-?\d{1,3}\.\d{2})")
@@ -216,6 +223,7 @@ class ReceiptReader:
 
 if __name__ == '__main__':
 
+    """
     reader = ReceiptReader()
 
     valid_receipts, excluded = reader.get_receipts()
@@ -231,7 +239,8 @@ if __name__ == '__main__':
                 text = reader.read_receipt(receipt)
                 json_receipt = reader.extract_items(text)
                 reader.check_totals(receipt,json_receipt)
-    
+    """
+
     """
     #reading = sys.stdin.readline().strip()
     #print(f"Python got: {reading}")
