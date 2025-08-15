@@ -6,18 +6,18 @@ import re
 import my_logger as logger
 import sys
 import json
-import file_handler as fh
+#import file_handler as fh
 
 class ReceiptReader:
 
     receipts = []
     logger = None
-    fh = None
+    #fh = None
 
     def __init__(self):
         self.compile_regex()
         self.logger = logger.Logger()
-        self.fh = fh.FileHandler()
+        #self.fh = fh.FileHandler()
 
     def get_receipts(self):
 
@@ -203,23 +203,6 @@ class ReceiptReader:
 
         return json_receipt
 
-    def check_totals(self,receipt_name,json_receipt):
-        #for receipt in self.receipts:
-
-            receipt = json.loads(json_receipt)
-            total_for_receipt = float(receipt["total"])
-            discount_for_receipt = receipt["discount"]
-            item_sum_for_receipt = 0
-
-            for item in receipt["items"]:
-
-                if 'quantity' in item:
-                    item_sum_for_receipt += float(item["price"])*float(item["quantity"])
-                else:
-                    item_sum_for_receipt += float(item["price"])
-
-            if round(total_for_receipt,2) == round(item_sum_for_receipt,2):
-                self.fh.write_to_file(receipt_name,receipt)
 
 if __name__ == '__main__':
 
