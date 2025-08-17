@@ -1,0 +1,62 @@
+{
+    "total": "18.50",
+    "date": "22/06/25",
+    "time": "16:34:51",
+    "discount": "2.75",
+    "items": [
+        {
+            "name": "Pink Lady 0080212",
+            "price": "2.75",
+            "quantity": "2"
+        },
+        {
+            "name": "Coupon Plus reward",
+            "price": "-2.75"
+        },
+        {
+            "name": "Filtered Milk",
+            "price": "1.75"
+        },
+        {
+            "name": "USoft Facial Tissues",
+            "price": "0.89",
+            "quantity": "2"
+        },
+        {
+            "name": "Plain Bagels",
+            "price": "0.79"
+        },
+        {
+            "name": "AlcoholFreeMouthwash",
+            "price": "0.54"
+        },
+        {
+            "name": "Tomato Sauce Basil",
+            "price": "0.69"
+        },
+        {
+            "name": "Long Grain Rice",
+            "price": "2.69"
+        },
+        {
+            "name": "Sweet Waffle Cones",
+            "price": "1.19"
+        },
+        {
+            "name": "Breakfast Muffins",
+            "price": "0.65"
+        },
+        {
+            "name": "Walkers Baked Salted",
+            "price": "3.19"
+        },
+        {
+            "name": "Tenderstem Broccoli 0082899",
+            "price": "1.49"
+        },
+        {
+            "name": "Chestnut Mushrooms 0083006",
+            "price": "0.99"
+        }
+    ]
+}

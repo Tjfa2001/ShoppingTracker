@@ -13,11 +13,17 @@ def main():
         reader.logger.log_message("No files to process... Exiting")
     else:
         reader.logger.log_message("Files to process:")
+
         for receipt in valid_receipts:
-            #if receipt == 'lidl_receipt1.png':
-                text = reader.read_receipt(receipt)
-                json_receipt = reader.extract_items(text)
-                validator.validate_receipt(receipt,json_receipt)
+                json_receipt = reader.read_receipt(receipt)
+
+                validated_receipt = validator.validate_receipt(json_receipt)
+
+                if not validated_receipt:
+                    file_handler.exclude(receipt) 
+                else:
+                    file_handler.write_json_receipt_to_file(receipt,validated_receipt)
+                    file_handler.accept(receipt)
 
 if __name__ == '__main__':
     main()
