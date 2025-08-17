@@ -5,15 +5,15 @@
     "discount": "0.69",
     "items": [
         {
-            "name": "Tomato Lasagne Sauce",
+            "name": "Lasagna Sauce",
             "price": "0.69"
         },
         {
-            "name": "Coupon Plus reward",
+            "name": "Coupon Plus Reward",
             "price": "-0.69"
         },
         {
-            "name": "MSC Shaped Cod",
+            "name": "Battered Cod",
             "price": "3.39"
         },
         {
@@ -21,7 +21,7 @@
             "price": "0.89"
         },
         {
-            "name": "Soya Drink Sweetened",
+            "name": "Soya Milk",
             "price": "0.99"
         },
         {
@@ -29,7 +29,7 @@
             "price": "0.69"
         },
         {
-            "name": "Pink Lady 0080212",
+            "name": "Pink Lady Apples",
             "price": "2.75",
             "quantity": "2"
         },
@@ -43,11 +43,11 @@
             "price": "1.29"
         },
         {
-            "name": "Soft Cheese Chilli",
+            "name": "Soft Chilli Cheese",
             "price": "1.39"
         },
         {
-            "name": "Extra Large Onions 0083130",
+            "name": "Extra Large Onions",
             "price": "1.59"
         }
     ]
