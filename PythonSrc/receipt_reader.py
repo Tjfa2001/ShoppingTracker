@@ -6,39 +6,51 @@ import re
 import my_logger as logger
 import sys
 import json
-import file_handler as fh
+#import file_handler as fh
 
-class receipt_reader:
+class ReceiptReader:
 
     receipts = []
     logger = None
-    fh = None
+    #fh = None
 
     def __init__(self):
         self.compile_regex()
         self.logger = logger.Logger()
-        self.fh = fh.File_Handler()
+        #self.fh = fh.FileHandler()
 
     def get_receipts(self):
 
         abspath = os.path.abspath(".")
         receipt_dir = os.path.join(abspath,r"ShoppingTracker\Receipts")
+        excluded_dir = os.path.join(abspath,r"ShoppingTracker\Excluded")
+        accepted_dir = os.path.join(abspath,r"ShoppingTracker\Accepted")
 
         receipts = []
         excluded_files = []
 
         for file in os.listdir(receipt_dir):
+            
+            receipt_loc = os.path.join(receipt_dir,file)
+
             pass_extension_check = self.file_extension_check(file)
             pass_openable_photo_check = self.open_photo_check(file,receipt_dir)
 
             if pass_extension_check and pass_openable_photo_check:
                 receipts.append(file)
+                accepted_loc = os.path.join(accepted_dir,file)
+                os.rename(receipt_loc,accepted_loc)
+
             else:
                 excluded_files.append(file)
+                
+                excluded_loc = os.path.join(excluded_dir,file)
+                os.rename(receipt_loc,excluded_loc)
 
         # Added this here for TESTING
         return receipts, excluded_files
 
+    # Checks whether the file can be opened
     def open_photo_check(self,file,dir):
         try:
             Image.open(os.path.join(dir,file))
@@ -48,21 +60,25 @@ class receipt_reader:
             self.logger.log_message(f"File {file} failed image opening test")
         return False
 
-    def file_extension_check(self,receipt):
-        match = re.search(r'(.+)\.(jpg|jpeg|png)',receipt,re.IGNORECASE)
-        if match:
-            file_name = match.group()
-            self.logger.log_message(f"File {file_name} passed extension test")
+    # Chceks whether the file has the right extension for a photo
+    def file_extension_check(self,file):
+
+        right_extension = self.extension_check.search(file)
+
+        if right_extension:
+            self.logger.log_message(f"File {file} passed extension test")
             return True
         else:
-            self.logger.log_message(f"File {receipt} failed extension test")
+            self.logger.log_message(f"File {file} failed extension test")
             return False
 
+    # Reads the receipt provided to the file
     def read_receipt(self,receipt):
     
         file_path=os.path.dirname(__file__)
-        relative_path="..\\Receipts\\" + receipt
+        relative_path="..\\Accepted\\" + receipt
         path=file_path+"\\"+relative_path
+
         pytesseract.pytesseract.tesseract_cmd = r'C:/Program Files/Tesseract-OCR/tesseract.exe'
         image = cv2.imread(path)
 
@@ -77,10 +93,12 @@ class receipt_reader:
     
         text = pytesseract.image_to_string(denoised,lang='eng')
         lines = [line for line in text.splitlines() if line.strip()]
+        
         return lines
 
     # Compiles the regex that will be used when extracting items
     def compile_regex(self):
+        self.extension_check = re.compile(r'(.+)\.(jpg|jpeg|png)',re.IGNORECASE)
         self.time_search = re.compile(r"(Time:\s+)(\d{2}:\d{2}:\d{2})")
         self.date_search = re.compile(r"(Date:\s+)(\d{2}\/\d{2}\/\d{2})")
         self.item_search = re.compile(r"(.*\s)(-?\d{1,3}\.\d{2})")
@@ -185,45 +203,11 @@ class receipt_reader:
 
         return json_receipt
 
-    def check_totals(self,receipt_name,json_receipt):
-        #for receipt in self.receipts:
-
-            receipt = json.loads(json_receipt)
-            total_for_receipt = float(receipt["total"])
-            discount_for_receipt = receipt["discount"]
-            item_sum_for_receipt = 0
-
-            for item in receipt["items"]:
-
-                if 'quantity' in item:
-                    item_sum_for_receipt += float(item["price"])*float(item["quantity"])
-                else:
-                    item_sum_for_receipt += float(item["price"])
-
-            print(total_for_receipt,item_sum_for_receipt)
-            if round(total_for_receipt,2) == round(item_sum_for_receipt,2):
-                self.fh.write_to_file(receipt_name,receipt)
 
 if __name__ == '__main__':
 
-    re.escape
     """
-    dict_test = {
-        "name":"Thomas"
-    }
-    dict_test.update({"age":23})
-    print(dict_test["name"])
-    print(dict_test["age"])
-    dict_test.update({"items":{
-        "ball":50,
-        "cat":50,
-        "hat":100
-    }})
-
-    j = json.dumps(dict_test,indent=3)
-    print(j)
-    """
-    reader = receipt_reader()
+    reader = ReceiptReader()
 
     valid_receipts, excluded = reader.get_receipts()
 
@@ -238,7 +222,8 @@ if __name__ == '__main__':
                 text = reader.read_receipt(receipt)
                 json_receipt = reader.extract_items(text)
                 reader.check_totals(receipt,json_receipt)
-    
+    """
+
     """
     #reading = sys.stdin.readline().strip()
     #print(f"Python got: {reading}")
