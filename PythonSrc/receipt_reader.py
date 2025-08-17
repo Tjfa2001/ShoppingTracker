@@ -6,18 +6,18 @@ import re
 import my_logger as logger
 import sys
 import json
-#import file_handler as fh
+import file_handler as fh
 
 class ReceiptReader:
 
     receipts = []
     logger = None
-    #fh = None
+    file_handler = None
 
     def __init__(self):
         self.compile_regex()
         self.logger = logger.Logger()
-        #self.fh = fh.FileHandler()
+        self.file_handler = fh.FileHandler()
 
     def get_receipts(self):
 
@@ -38,14 +38,16 @@ class ReceiptReader:
 
             if pass_extension_check and pass_openable_photo_check:
                 receipts.append(file)
-                accepted_loc = os.path.join(accepted_dir,file)
-                os.rename(receipt_loc,accepted_loc)
+                #self.file_handler
+                #accepted_loc = os.path.join(accepted_dir,file)
+                #os.rename(receipt_loc,accepted_loc)
 
             else:
                 excluded_files.append(file)
                 
-                excluded_loc = os.path.join(excluded_dir,file)
-                os.rename(receipt_loc,excluded_loc)
+                self.file_handler.exclude(file)
+                #excluded_loc = os.path.join(excluded_dir,file)
+                #os.rename(receipt_loc,excluded_loc)
 
         # Added this here for TESTING
         return receipts, excluded_files
@@ -76,7 +78,7 @@ class ReceiptReader:
     def read_receipt(self,receipt):
     
         file_path=os.path.dirname(__file__)
-        relative_path="..\\Accepted\\" + receipt
+        relative_path="..\\Receipts\\" + receipt
         path=file_path+"\\"+relative_path
 
         pytesseract.pytesseract.tesseract_cmd = r'C:/Program Files/Tesseract-OCR/tesseract.exe'
@@ -94,7 +96,9 @@ class ReceiptReader:
         text = pytesseract.image_to_string(denoised,lang='eng')
         lines = [line for line in text.splitlines() if line.strip()]
         
-        return lines
+        json_receipt = self.extract_items(lines)
+
+        return json_receipt
 
     # Compiles the regex that will be used when extracting items
     def compile_regex(self):
@@ -195,7 +199,7 @@ class ReceiptReader:
 
         # (For testing purposes only) Prints out the dictionary in JSON format
         json_receipt_nice = json.dumps(receipt_dict,indent=4,ensure_ascii=False).encode("utf-8")
-        print(json_receipt_nice.decode())
+        #print(json_receipt_nice.decode())
 
         # Adds the receipt to the list of the receipts to be processed
         json_receipt = json.dumps(receipt_dict)
@@ -205,24 +209,6 @@ class ReceiptReader:
 
 
 if __name__ == '__main__':
-
-    """
-    reader = ReceiptReader()
-
-    valid_receipts, excluded = reader.get_receipts()
-
-    if valid_receipts is None:
-        reader.logger.log_message("No files to process... Exiting")
-    else:
-        reader.logger.log_message("Files to process:")
-        for receipt in valid_receipts:
-            #if receipt == 'lidl_receipt1.png':
-                #print(receipt)
-            #if receipt == 'lidl_receipt1.png':
-                text = reader.read_receipt(receipt)
-                json_receipt = reader.extract_items(text)
-                reader.check_totals(receipt,json_receipt)
-    """
 
     """
     #reading = sys.stdin.readline().strip()
