@@ -1,0 +1,44 @@
+{
+    "total": "9.71",
+    "date": "08/08/25",
+    "time": "19:11:35",
+    "discount": "0.39",
+    "items": [
+        {
+            "name": "Choc Iced Doughnut",
+            "price": "0.39"
+        },
+        {
+            "name": "Free Bakery Prize",
+            "price": "-0.39"
+        },
+        {
+            "name": "Pink Lady 0080212",
+            "price": "2.75"
+        },
+        {
+            "name": "Breakfast Muffins",
+            "price": "0.65"
+        },
+        {
+            "name": "Filtered Milk",
+            "price": "1.75"
+        },
+        {
+            "name": "Sauce Smooth Tomato",
+            "price": "0.69"
+        },
+        {
+            "name": "Pepper Red Loose 0082616",
+            "price": "0.69"
+        },
+        {
+            "name": "Grated Mozzarella",
+            "price": "2.19"
+        },
+        {
+            "name": "Washed Baby Spinach",
+            "price": "0.99"
+        }
+    ]
+}

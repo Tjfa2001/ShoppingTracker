@@ -1,0 +1,54 @@
+{
+    "total": "17.03",
+    "date": "29/07/25",
+    "time": "13:41:42",
+    "discount": "0.69",
+    "items": [
+        {
+            "name": "Tomato Lasagne Sauce",
+            "price": "0.69"
+        },
+        {
+            "name": "Coupon Plus reward",
+            "price": "-0.69"
+        },
+        {
+            "name": "MSC Shaped Cod",
+            "price": "3.39"
+        },
+        {
+            "name": "Plain Bagels",
+            "price": "0.89"
+        },
+        {
+            "name": "Soya Drink Sweetened",
+            "price": "0.99"
+        },
+        {
+            "name": "Garlic Naan Bread",
+            "price": "0.69"
+        },
+        {
+            "name": "Pink Lady 0080212",
+            "price": "2.75",
+            "quantity": "2"
+        },
+        {
+            "name": "Breakfast Muffins",
+            "price": "0.65",
+            "quantity": "2"
+        },
+        {
+            "name": "Caramel Peanut Bars",
+            "price": "1.29"
+        },
+        {
+            "name": "Soft Cheese Chilli",
+            "price": "1.39"
+        },
+        {
+            "name": "Extra Large Onions 0083130",
+            "price": "1.59"
+        }
+    ]
+}

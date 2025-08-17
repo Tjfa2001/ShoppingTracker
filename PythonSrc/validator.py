@@ -14,6 +14,11 @@ class Validator():
             pass
         else:
             return False
+        
+        item_lookup = self.lookup_items(receipt,json_receipt)
+
+    def lookup_items(self,receipt,json_receipt):
+        
 
     def check_totals(self,receipt_name,json_receipt):
         #for receipt in self.receipts:

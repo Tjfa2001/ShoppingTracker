@@ -1,0 +1,22 @@
+{
+    "total": "0.29",
+    "date": "06/08/25",
+    "time": "19:41:15",
+    "discount": "0.79",
+    "items": [
+        {
+            "name": "Chocolate Cronut",
+            "price": "0.79"
+        },
+        {
+            "name": "Coupon Plus bakery rewar",
+            "price": "-0.79"
+        },
+        {
+            "name": "Bananas Loose 0080000",
+            "price": "0.29",
+            "weight": "0.324",
+            "ppkg": "0.90"
+        }
+    ]
+}
