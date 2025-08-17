@@ -5,7 +5,7 @@
     "discount": "0.39",
     "items": [
         {
-            "name": "Choc Iced Doughnut",
+            "name": "Chocolate Doughnut",
             "price": "0.39"
         },
         {
@@ -13,7 +13,7 @@
             "price": "-0.39"
         },
         {
-            "name": "Pink Lady 0080212",
+            "name": "Pink Lady Apples",
             "price": "2.75"
         },
         {
@@ -25,11 +25,11 @@
             "price": "1.75"
         },
         {
-            "name": "Sauce Smooth Tomato",
+            "name": "Smooth Tomato Sauce",
             "price": "0.69"
         },
         {
-            "name": "Pepper Red Loose 0082616",
+            "name": "Red Pepper",
             "price": "0.69"
         },
         {
