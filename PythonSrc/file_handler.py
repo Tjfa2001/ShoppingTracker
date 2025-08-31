@@ -8,6 +8,7 @@ class FileHandler():
     receipt_directory = None
     accepted_directory = None
     excluded_directory = None
+    log_directory = None
 
     def __init__(self):
         self.get_directories()
@@ -15,6 +16,13 @@ class FileHandler():
 
     def compile_regex(self):
         self.filename_search = re.compile(r"(\w+)\.(\w+)")
+
+    def write_logger_to_file(self,logger):
+        log_name = "log"
+        with open(os.path.join(self.log_directory,log_name),'w') as file:
+            for line in logger.log:
+                file.write(f"{line}\n")
+
 
     def write_json_receipt_to_file(self,filename,json_receipt):
 
@@ -56,6 +64,7 @@ class FileHandler():
         self.receipt_directory = os.path.join(os.path.abspath("."),r"ShoppingTracker\Receipts")
         self.accepted_directory = os.path.join(os.path.abspath("."),r"ShoppingTracker\Accepted")
         self.excluded_directory = os.path.join(os.path.abspath("."),r"ShoppingTracker\Excluded")
+        self.log_directory = os.path.join(os.path.abspath("."),r"ShoppingTracker\Logs")
         
 
 if __name__ == '__main__':

@@ -3,54 +3,66 @@ import cv2
 from PIL import Image
 import os
 import re
-import my_logger as logger
+#import my_logger as logger
 import sys
 import json
 import file_handler as fh
+import numpy as np
 
 class ReceiptReader:
 
     receipts = []
     logger = None
     file_handler = None
+    abspath = os.path.abspath(".")
+    receipt_dir = os.path.join(abspath,r"ShoppingTracker\Receipts")
+    excluded_dir = os.path.join(abspath,r"ShoppingTracker\Excluded")
+    accepted_dir = os.path.join(abspath,r"ShoppingTracker\Accepted")
 
-    def __init__(self):
+    def __init__(self,logger):
         self.compile_regex()
-        self.logger = logger.Logger()
+        self.logger = logger
         self.file_handler = fh.FileHandler()
 
     def get_receipts(self):
 
-        abspath = os.path.abspath(".")
-        receipt_dir = os.path.join(abspath,r"ShoppingTracker\Receipts")
-        excluded_dir = os.path.join(abspath,r"ShoppingTracker\Excluded")
-        accepted_dir = os.path.join(abspath,r"ShoppingTracker\Accepted")
-
         receipts = []
         excluded_files = []
 
-        for file in os.listdir(receipt_dir):
+        for file in os.listdir(self.receipt_dir):
             
-            receipt_loc = os.path.join(receipt_dir,file)
+            receipt_loc = os.path.join(self.receipt_dir,file)
 
             pass_extension_check = self.file_extension_check(file)
-            pass_openable_photo_check = self.open_photo_check(file,receipt_dir)
+            pass_openable_photo_check = self.open_photo_check(file,self.receipt_dir)
+            self.name_check(file)
 
             if pass_extension_check and pass_openable_photo_check:
                 receipts.append(file)
-                #self.file_handler
-                #accepted_loc = os.path.join(accepted_dir,file)
-                #os.rename(receipt_loc,accepted_loc)
 
             else:
-                excluded_files.append(file)
-                
+                excluded_files.append(file)     
                 self.file_handler.exclude(file)
-                #excluded_loc = os.path.join(excluded_dir,file)
-                #os.rename(receipt_loc,excluded_loc)
 
         # Added this here for TESTING
         return receipts, excluded_files
+
+    def name_check(self,file):
+
+        pattern = re.compile(r'(lidl_receipt)(\d+)\.(jpg|jpeg|png)',re.IGNORECASE)
+        all_processed = os.listdir(self.accepted_dir)
+        all_processed.sort(reverse=True)
+        last_receipt = all_processed[0]
+        match = re.search(pattern,last_receipt)
+
+        extension_pattern = re.compile(r'(.+)(jpg|jpeg|png)$')
+        file_extension = re.search(extension_pattern,file)
+        
+        if match:
+            print(f"{match.group(2)} was the last receipt inserted")
+            print(f"lidl_receipt{int(match.group(2))+1}{file_extension.group(2)}")
+        else:
+            return 0
 
     # Checks whether the file can be opened
     def open_photo_check(self,file,dir):
