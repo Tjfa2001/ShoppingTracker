@@ -14,10 +14,12 @@ class ReceiptReader:
     receipts = []
     logger = None
     file_handler = None
+    first_name_check = True
     abspath = os.path.abspath(".")
     receipt_dir = os.path.join(abspath,r"ShoppingTracker\Receipts")
     excluded_dir = os.path.join(abspath,r"ShoppingTracker\Excluded")
     accepted_dir = os.path.join(abspath,r"ShoppingTracker\Accepted")
+    next_number = 0
 
     def __init__(self,logger):
         self.compile_regex()
@@ -35,11 +37,15 @@ class ReceiptReader:
 
             pass_extension_check = self.file_extension_check(file)
             pass_openable_photo_check = self.open_photo_check(file,self.receipt_dir)
-            self.name_check(file)
+            
+            #new_name = self.name_check(file)
+            
+            #self.file_handler.rename(os.path.join(self.receipt_dir,new_name),os.path.join(self.receipt_dir,file))
 
             if pass_extension_check and pass_openable_photo_check:
-                receipts.append(file)
-
+                new_name = self.name_check(file)
+                self.file_handler.rename(os.path.join(self.receipt_dir,new_name),os.path.join(self.receipt_dir,file))
+                receipts.append(new_name)
             else:
                 excluded_files.append(file)     
                 self.file_handler.exclude(file)
@@ -49,20 +55,33 @@ class ReceiptReader:
 
     def name_check(self,file):
 
-        pattern = re.compile(r'(lidl_receipt)(\d+)\.(jpg|jpeg|png)',re.IGNORECASE)
-        all_processed = os.listdir(self.accepted_dir)
-        all_processed.sort(reverse=True)
-        last_receipt = all_processed[0]
-        match = re.search(pattern,last_receipt)
+        if self.first_name_check:
+            self.first_name_check = False
+
+            # This should be compiled in the dedicated regex compiling method
+            pattern = re.compile(r'(lidl_receipt)(\d+)\.(jpg|jpeg|png)',re.IGNORECASE)
+
+            # A list of all the processed receipts
+            all_processed = os.listdir(self.accepted_dir)
+            all_processed.sort(reverse=True)
+            last_receipt = all_processed[0]
+            match = re.search(pattern,last_receipt)
+
+            if match:
+                next_number = int(match.group(2)) + 1
+                self.next_number = next_number + 1
+            else:
+                next_number = 1
+                self.next_number = 2
+        else:
+            next_number = self.next_number
+            self.next_number = next_number + 1
 
         extension_pattern = re.compile(r'(.+)(jpg|jpeg|png)$')
         file_extension = re.search(extension_pattern,file)
         
-        if match:
-            print(f"{match.group(2)} was the last receipt inserted")
-            print(f"lidl_receipt{int(match.group(2))+1}{file_extension.group(2)}")
-        else:
-            return 0
+        new_receipt_name = f"lidl_receipt{next_number}.{file_extension.group(2)}"
+        return new_receipt_name
 
     # Checks whether the file can be opened
     def open_photo_check(self,file,dir):

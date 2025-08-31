@@ -1,22 +1,44 @@
 {
-    "total": "0.29",
-    "date": "06/08/25",
-    "time": "19:41:15",
-    "discount": "0.79",
+    "total": "11.25",
+    "date": "10/08/25",
+    "time": "14:41:59",
+    "discount": "1.14",
     "items": [
         {
-            "name": "Chocolate Cronut",
-            "price": "0.79"
+            "name": "Cheese Twist",
+            "price": "0.99"
         },
         {
-            "name": "Free Bakery Item",
-            "price": "-0.79"
+            "name": "Free Bakery Prize",
+            "price": "-0.99"
         },
         {
-            "name": "Loose Bananas",
-            "price": "0.29",
-            "weight": "0.324",
-            "ppkg": "0.90"
+            "name": "Dark Chocolate Chips",
+            "price": "0.99"
+        },
+        {
+            "name": "15% off coupon",
+            "price": "-0.15"
+        },
+        {
+            "name": "Soya Milk",
+            "price": "0.99"
+        },
+        {
+            "name": "Non Bio Detergent",
+            "price": "4.19"
+        },
+        {
+            "name": "Tenderstem Broccoli",
+            "price": "1.59"
+        },
+        {
+            "name": "Plain Bagels",
+            "price": "0.89"
+        },
+        {
+            "name": "Pink Lady Apples",
+            "price": "2.75"
         }
     ]
 }

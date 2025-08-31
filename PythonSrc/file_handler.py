@@ -23,6 +23,8 @@ class FileHandler():
             for line in logger.log:
                 file.write(f"{line}\n")
 
+    def rename(self,new_name,old_name):
+        os.rename(old_name,new_name)
 
     def write_json_receipt_to_file(self,filename,json_receipt):
 
