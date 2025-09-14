@@ -2,9 +2,10 @@ import receipt_reader as rr
 import my_logger as l
 import file_handler as fh
 import validator as val
+import database_connector as dc
 
 def main():
-    
+
     file_handler = fh.FileHandler()
     logger = l.Logger(file_handler)
     logger.log_message("File handler and logger created")
@@ -34,7 +35,7 @@ def main():
                     logger.log_message(f"Receipt was successfully validated")
                     file_handler.write_json_receipt_to_file(receipt,validated_receipt)
                     file_handler.accept(receipt)
-    
+
     logger.write_to_file()
 
 
