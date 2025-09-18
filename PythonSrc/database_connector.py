@@ -1,4 +1,5 @@
 import pyodbc
+import re
 from datetime import date, time, datetime
 
 class DatabaseConnector():
@@ -41,11 +42,55 @@ class DatabaseConnector():
         finally:
             cur.commit()
 
+    def send_to_database(self,receipt_name,validated_receipt):
+        items=validated_receipt['items']
+        total=validated_receipt['total']
+        discount=validated_receipt['discount']
+        date_from_r=validated_receipt['date']
+
+        date_pattern = re.compile(r'(\d+)/(\d+)/(\d+)')
+        match = re.search(date_pattern,date_from_r)
+
+        if match:
+            year = f"20{match.group(3)}"
+            month = match.group(2)
+            day = match.group(1)
+            iso_date = f"{year}-{month}-{day}"
+        else:
+            iso_date = "2001-09-17"
+
+        correct_date = date.fromisoformat(iso_date)
+        time=validated_receipt['time']
+
+        self.send_to_receipt_table(receipt_name,total,discount,correct_date,time)
+
+    def send_to_receipt_table(self,receipt,total,discount,date,time):
+        cur = self.connection.cursor()
+        try:
+            cur.execute('CALL insert_receipt(?,?,?,?,?);',(receipt,total,discount,date,time))
+        except pyodbc.DatabaseError as err:
+            cur.rollback()
+            print(err.args[1])
+        finally:
+            cur.commit()
+
     def __exit__(self,exception_type,exception_value,exception_traceback): 
         self.connection.close()
 
 if __name__ == '__main__':
     with DatabaseConnector() as dbc:
-         dbc.callP()
-         #print(datetime.now().year)
+         #dbc.callP()
+        test_date = '22/06/25'
+        date_pattern = re.compile(r'(\d+)/(\d+)/(\d+)')
+        match = re.search(date_pattern,test_date)
+        if match:
+            year = f"20{match.group(3)}"
+            month = match.group(2)
+            day = match.group(1)
+            iso_date = f"{year}-{month}-{day}"
+
+        d = date.fromisoformat(iso_date)    
+        print(d.__class__)
+         
+         
 

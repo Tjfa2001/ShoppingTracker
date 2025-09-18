@@ -3,6 +3,7 @@ import my_logger as l
 import file_handler as fh
 import validator as val
 import database_connector as dc
+from datetime import date
 
 def main():
 
@@ -14,6 +15,7 @@ def main():
     logger.log_message("Retrieving receipts")
     valid_receipts, excluded = reader.get_receipts()
     validator = val.Validator(logger)
+    db_connect = dc.DatabaseConnector()
 
     if valid_receipts is None:
         logger.log_message("No files to process... Exiting")
@@ -34,10 +36,13 @@ def main():
                 else:
                     logger.log_message(f"Receipt was successfully validated")
                     file_handler.write_json_receipt_to_file(receipt,validated_receipt)
+                    db_connect.send_to_database(receipt,validated_receipt)
                     file_handler.accept(receipt)
 
     logger.write_to_file()
 
 
 if __name__ == '__main__':
+    #test = date.fromisoformat('2025-06-22')
+    #print(test)
     main()
