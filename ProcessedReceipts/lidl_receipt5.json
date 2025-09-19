@@ -1,22 +1,62 @@
 {
-    "total": "0.29",
-    "date": "06/08/25",
-    "time": "19:41:15",
-    "discount": "0.79",
+    "total": "18.50",
+    "date": "22/06/25",
+    "time": "16:34:51",
+    "discount": "2.75",
     "items": [
         {
-            "name": "Chocolate Cronut",
+            "name": "Pink Lady Apples",
+            "price": "2.75",
+            "quantity": "2"
+        },
+        {
+            "name": "Coupon Plus Reward",
+            "price": "-2.75"
+        },
+        {
+            "name": "Filtered Milk",
+            "price": "1.75"
+        },
+        {
+            "name": "Facial Tissues",
+            "price": "0.89",
+            "quantity": "2"
+        },
+        {
+            "name": "Plain Bagels",
             "price": "0.79"
         },
         {
-            "name": "Free Bakery Item",
-            "price": "-0.79"
+            "name": "Mouthwash",
+            "price": "0.54"
         },
         {
-            "name": "Loose Bananas",
-            "price": "0.29",
-            "weight": "0.324",
-            "ppkg": "0.90"
+            "name": "Tomato and Basil Sauce",
+            "price": "0.69"
+        },
+        {
+            "name": "Long Grain Rice",
+            "price": "2.69"
+        },
+        {
+            "name": "Waffle Cones",
+            "price": "1.19"
+        },
+        {
+            "name": "Breakfast Muffins",
+            "price": "0.65"
+        },
+        {
+            "name": "Walkers Baked Crisps",
+            "price": "3.19"
+        },
+        {
+            "name": "Tenderstem Broccoli",
+            "price": "1.49"
+        },
+        {
+            "name": "Chestnut Mushrooms",
+            "price": "0.99"
         }
     ]
 }

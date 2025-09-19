@@ -62,12 +62,40 @@ class DatabaseConnector():
         correct_date = date.fromisoformat(iso_date)
         time=validated_receipt['time']
 
+        for item in items:
+            name = item['name']
+
+            if "ppkg" in item:
+                price = item['ppkg']
+            else:
+                price = item['price']
+            
+            if "quantity" in item:
+                quantity = item['quantity']
+            else:
+                quantity = 1
+            
+            cost = int(quantity) * float(price)
+
+            self.send_to_item_table(receipt_name,name,price,quantity,cost)
+
         self.send_to_receipt_table(receipt_name,total,discount,correct_date,time)
+
+    def send_to_item_table(self,receipt,item,price,quantity,cost):
+        cur = self.connection.cursor()
+        try:
+            cur.execute('CALL lidl.insert_item(?,?,?,?,?);',(receipt,item,price,quantity,cost))
+        except pyodbc.DatabaseError as err:
+            cur.rollback()
+            print(err.args[1])
+            print(err)
+        finally:
+            cur.commit()
 
     def send_to_receipt_table(self,receipt,total,discount,date,time):
         cur = self.connection.cursor()
         try:
-            cur.execute('CALL insert_receipt(?,?,?,?,?);',(receipt,total,discount,date,time))
+            cur.execute('CALL lidl.insert_receipt(?,?,?,?,?);',(receipt,total,discount,date,time))
         except pyodbc.DatabaseError as err:
             cur.rollback()
             print(err.args[1])
@@ -90,7 +118,7 @@ if __name__ == '__main__':
             iso_date = f"{year}-{month}-{day}"
 
         d = date.fromisoformat(iso_date)    
-        print(d.__class__)
+        
          
          
 

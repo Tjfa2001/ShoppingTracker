@@ -46,3 +46,6 @@ if __name__ == '__main__':
     #test = date.fromisoformat('2025-06-22')
     #print(test)
     main()
+    #dictionary = {"name":"thomas","age":15}
+    #if "age" in dictionary:
+    #    print(dictionary["age"])
