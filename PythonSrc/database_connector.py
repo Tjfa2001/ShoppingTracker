@@ -7,6 +7,7 @@ class DatabaseConnector():
     connection = None
 
     def __init__(self):
+        # Connect to your postgres DB
         self.connection = pyodbc.connect("""Driver={PostgreSQL UNICODE};
                                             Server=localhost;
                                             Port=5432;
@@ -14,7 +15,7 @@ class DatabaseConnector():
                                             Uid=postgres;
                                             Pwd=postgres;""")
     def __enter__(self):
-        
+        # Set encoding for the connection
         self.connection.setencoding(encoding='utf-8')
         self.connection.setdecoding(pyodbc.SQL_CHAR,encoding='utf-8')
         self.connection.setdecoding(pyodbc.SQL_WCHAR,encoding='utf-8')
@@ -43,6 +44,7 @@ class DatabaseConnector():
             cur.commit()
 
     def send_to_database(self,receipt_name,validated_receipt):
+        # Send validated receipt data to the database
         items=validated_receipt['items']
         total=validated_receipt['total']
         discount=validated_receipt['discount']
@@ -103,11 +105,11 @@ class DatabaseConnector():
             cur.commit()
 
     def __exit__(self,exception_type,exception_value,exception_traceback): 
+        # Close the database connection
         self.connection.close()
 
 if __name__ == '__main__':
     with DatabaseConnector() as dbc:
-         #dbc.callP()
         test_date = '22/06/25'
         date_pattern = re.compile(r'(\d+)/(\d+)/(\d+)')
         match = re.search(date_pattern,test_date)

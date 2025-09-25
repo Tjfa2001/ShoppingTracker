@@ -37,11 +37,8 @@ class ReceiptReader:
 
             pass_extension_check = self.file_extension_check(file)
             pass_openable_photo_check = self.open_photo_check(file,self.receipt_dir)
-            
-            #new_name = self.name_check(file)
-            
-            #self.file_handler.rename(os.path.join(self.receipt_dir,new_name),os.path.join(self.receipt_dir,file))
 
+            # If the file passes both checks, rename it and add to receipts to be processed
             if pass_extension_check and pass_openable_photo_check:
                 new_name = self.name_check(file)
                 self.file_handler.rename(os.path.join(self.receipt_dir,new_name),os.path.join(self.receipt_dir,file))
@@ -49,8 +46,7 @@ class ReceiptReader:
             else:
                 excluded_files.append(file)     
                 self.file_handler.exclude(file)
-
-        # Added this here for TESTING
+                
         return receipts, excluded_files
 
     def name_check(self,file):
@@ -63,16 +59,22 @@ class ReceiptReader:
 
             # A list of all the processed receipts
             all_processed = os.listdir(self.accepted_dir)
-            all_processed.sort(reverse=True)
-            last_receipt = all_processed[0]
-            match = re.search(pattern,last_receipt)
+            processed_numbers = []
+            for receipt in all_processed:
+                match = re.search(pattern,receipt)
+                if match:
+                    processed_number = int(match.group(2))
+                    processed_numbers.append(processed_number)
 
-            if match:
-                next_number = int(match.group(2)) + 1
-                self.next_number = next_number + 1
-            else:
-                next_number = 1
-                self.next_number = 2
+
+            processed_numbers.sort(reverse=True)
+            last_number = processed_numbers[0] if processed_numbers else 0
+
+            #last_receipt = all_processed[0]
+            # = re.search(pattern,last_receipt)
+
+            next_number = int(last_number) + 1
+            self.next_number = next_number + 1
         else:
             next_number = self.next_number
             self.next_number = next_number + 1

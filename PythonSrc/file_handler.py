@@ -62,6 +62,7 @@ class FileHandler():
             print("File does not exist")
 
     def get_directories(self):
+        # Set up directories
         self.processed_directory = os.path.join(os.path.abspath("."),r"ShoppingTracker\ProcessedReceipts") 
         self.receipt_directory = os.path.join(os.path.abspath("."),r"ShoppingTracker\Receipts")
         self.accepted_directory = os.path.join(os.path.abspath("."),r"ShoppingTracker\Accepted")
@@ -71,4 +72,4 @@ class FileHandler():
 
 if __name__ == '__main__':
     fh = FileHandler()
-    print(fh.read_from_file("lidl_receipt1.json"))
+
