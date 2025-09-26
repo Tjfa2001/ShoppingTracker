@@ -59,7 +59,14 @@ class Validator():
     def check_totals(self,json_receipt):
 
             receipt = json.loads(json_receipt)
-            total_for_receipt = float(receipt["total"])
+            
+            if 'total' not in receipt:
+                print("NO TOTAL")
+                self.log_message("No total found on receipt")
+                return False
+            else:
+                total_for_receipt = float(receipt["total"])
+                
             item_sum_for_receipt = 0
 
             for item in receipt["items"]:
@@ -72,6 +79,7 @@ class Validator():
             if round(total_for_receipt,2) == round(item_sum_for_receipt,2):
                 return True
             else:
+                self.log_message(f"Total {total_for_receipt} does not match sum of items {item_sum_for_receipt}") 
                 return False
             
     def log_message(self,message):

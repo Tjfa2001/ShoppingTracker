@@ -46,7 +46,7 @@ class ReceiptReader:
             else:
                 excluded_files.append(file)     
                 self.file_handler.exclude(file)
-                
+
         return receipts, excluded_files
 
     def name_check(self,file):
@@ -129,6 +129,7 @@ class ReceiptReader:
         text = pytesseract.image_to_string(denoised,lang='eng')
         lines = [line for line in text.splitlines() if line.strip()]
         
+        print(lines)
         json_receipt = self.extract_items(lines)
 
         return json_receipt
@@ -139,7 +140,7 @@ class ReceiptReader:
         self.time_search = re.compile(r"(Time:\s+)(\d{2}:\d{2}:\d{2})")
         self.date_search = re.compile(r"(Date:\s+)(\d{2}\/\d{2}\/\d{2})")
         self.item_search = re.compile(r"(.*\s)(-?\d{1,3}\.\d{2})")
-        self.total_search = re.compile(r"(TOTAL)(\s+)(\d{1,4}\.\d{2})")
+        self.total_search = re.compile(r"(TOTAL)(\s+)(\d{1,4}\.\d{1,2})")
         self.payment_search = re.compile(r"CARD", re.IGNORECASE)
         self.discount_search = re.compile(r"(TOTAL DISCOUNT\s*)(\d{1,2}.\d{1,2})")
         self.quantity_check = re.compile(r"(\d{1,2})(\s?[xX]{1,2}\s*£\d{1,2}.\d{1,2})")
@@ -219,6 +220,7 @@ class ReceiptReader:
 
                if time:
                    receipt_dict.update({"time":f"{time.group(2)}"})
+                   break
 
                # Looks for the total on the receipt
                total_cost = self.total_search.search(line)
@@ -238,11 +240,19 @@ class ReceiptReader:
         json_receipt = json.dumps(receipt_dict)
         self.receipts.append(json_receipt)
 
+        #print(json_receipt)
         return json_receipt
 
 
 if __name__ == '__main__':
 
+    #receiptr = ReceiptReader(None)
+    #receiptr.read_receipt("lidl_receipt4.jpg")
+
+    total_search = re.compile(r"(TOTAL)(\s+)(\d{1,4}\.\d{1,2})")
+    match = total_search.search("TOTAL 3.0")
+    if match:
+        print(match.group(3))
     """
     #reading = sys.stdin.readline().strip()
     #print(f"Python got: {reading}")

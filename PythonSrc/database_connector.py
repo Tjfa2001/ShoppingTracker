@@ -6,7 +6,7 @@ class DatabaseConnector():
 
     connection = None
 
-    def __init__(self):
+    def __init__(self,logger):
         # Connect to your postgres DB
         self.connection = pyodbc.connect("""Driver={PostgreSQL UNICODE};
                                             Server=localhost;
@@ -14,6 +14,10 @@ class DatabaseConnector():
                                             Database=lidl_receipts;
                                             Uid=postgres;
                                             Pwd=postgres;""")
+        self.logger = logger
+        self.logger.log_message("Database connection established")
+
+
     def __enter__(self):
         # Set encoding for the connection
         self.connection.setencoding(encoding='utf-8')
@@ -21,6 +25,7 @@ class DatabaseConnector():
         self.connection.setdecoding(pyodbc.SQL_WCHAR,encoding='utf-8')
         return self
 
+    """
     def executeSQL(self,SQL):
         cur = self.connection.cursor()
         cur.execute("SELECT * FROM lidl.receipts WHERE total > ? AND discount <= ?;",(1,5))
@@ -28,6 +33,7 @@ class DatabaseConnector():
         #cur.commit()
         for row in all:
             print(row.receipt)
+    """
 
     def callP(self):
         cur = self.connection.cursor()
@@ -84,6 +90,7 @@ class DatabaseConnector():
         self.send_to_receipt_table(receipt_name,total,discount,correct_date,time)
 
     def send_to_item_table(self,receipt,item,price,quantity,cost):
+        self.logger.log_message(f"Sending item {item} to database")
         cur = self.connection.cursor()
         try:
             cur.execute('CALL lidl.insert_item(?,?,?,?,?);',(receipt,item,price,quantity,cost))
@@ -95,6 +102,7 @@ class DatabaseConnector():
             cur.commit()
 
     def send_to_receipt_table(self,receipt,total,discount,date,time):
+        self.logger.log_message(f"Sending receipt {receipt} to database")
         cur = self.connection.cursor()
         try:
             cur.execute('CALL lidl.insert_receipt(?,?,?,?,?);',(receipt,total,discount,date,time))

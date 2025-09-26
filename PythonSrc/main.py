@@ -5,8 +5,10 @@ import validator as val
 import database_connector as dc
 from datetime import date
 
+# Main function to run the shopping tracker application
 def main():
 
+    # Create instances of necessary classes
     file_handler = fh.FileHandler()
     logger = l.Logger(file_handler)
     logger.log_message("File handler and logger created")
@@ -15,7 +17,7 @@ def main():
     logger.log_message("Retrieving receipts")
     valid_receipts, excluded = reader.get_receipts()
     validator = val.Validator(logger)
-    db_connect = dc.DatabaseConnector()
+    db_connect = dc.DatabaseConnector(logger)
 
     if valid_receipts is None:
         logger.log_message("No files to process... Exiting")
@@ -26,7 +28,7 @@ def main():
                 
                 logger.log_message(f"Reading receipt: {receipt}")
                 json_receipt = reader.read_receipt(receipt)
-
+            
                 logger.log_message(f"Validating receipt: {receipt}")
                 validated_receipt = validator.validate_receipt(json_receipt)
 
@@ -43,9 +45,5 @@ def main():
 
 
 if __name__ == '__main__':
-    #test = date.fromisoformat('2025-06-22')
-    #print(test)
     main()
-    #dictionary = {"name":"thomas","age":15}
-    #if "age" in dictionary:
-    #    print(dictionary["age"])
+    
