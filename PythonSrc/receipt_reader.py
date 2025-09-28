@@ -6,7 +6,7 @@ import re
 #import my_logger as logger
 import sys
 import json
-import ShoppingTracker.PythonSrc.file_handler as fh
+import file_handler as fh
 import numpy as np
 
 class ReceiptReader:
@@ -62,19 +62,22 @@ class ReceiptReader:
 
         return receipts, excluded_files
 
+    # Checks the name of the file and renames it to the next in the sequence
     def name_check(self,file):
 
+        # If this is the first time the function has been run, determine the next number in the sequence
         if self.first_name_check:
+            
             self.first_name_check = False
-
-            # This should be compiled in the dedicated regex compiling method
-            pattern = re.compile(r'(lidl_receipt)(\d+)\.(jpg|jpeg|png)',re.IGNORECASE)
 
             # A list of all the processed receipts
             all_processed = os.listdir(self.accepted_dir)
             processed_numbers = []
+            
             for receipt in all_processed:
-                match = re.search(pattern,receipt)
+                
+                match = re.search(self.name_pattern,receipt)
+                
                 if match:
                     processed_number = int(match.group(2))
                     processed_numbers.append(processed_number)
@@ -83,19 +86,16 @@ class ReceiptReader:
             processed_numbers.sort(reverse=True)
             last_number = processed_numbers[0] if processed_numbers else 0
 
-            #last_receipt = all_processed[0]
-            # = re.search(pattern,last_receipt)
-
             next_number = int(last_number) + 1
             self.next_number = next_number + 1
         else:
             next_number = self.next_number
             self.next_number = next_number + 1
 
-        extension_pattern = re.compile(r'(.+)(jpg|jpeg|png)$')
-        file_extension = re.search(extension_pattern,file)
+        file_extension = self.extension_pattern.search(file)
         
         new_receipt_name = f"lidl_receipt{next_number}.{file_extension.group(2)}"
+        
         return new_receipt_name
 
     # Checks whether the file can be opened
@@ -157,6 +157,8 @@ class ReceiptReader:
         self.discount_search = re.compile(r"(TOTAL DISCOUNT\s*)(\d{1,2}.\d{1,2})")
         self.quantity_check = re.compile(r"(\d{1,2})(\s?[xX]{1,2}\s*£\d{1,2}.\d{1,2})")
         self.weight_check = re.compile(r"(\d{1,2}\.\d{1,3})(\s?kg\s?@\s?£\s?)(\d{1,2}\.\d{1,2})")
+        self.name_pattern = re.compile(r'(lidl_receipt)(\d+)\.(jpg|jpeg|png)',re.IGNORECASE)
+        self.extension_pattern = re.compile(r'(.+)\.(jpg|jpeg|png)$',re.IGNORECASE)
 
     # Extracts the items from the receipt text
     def extract_items(self,text):
@@ -224,24 +226,14 @@ class ReceiptReader:
                    else:
                        continue
 
-               # Looks for the date on the receipt 
-               date = self.date_search.search(line)
-               
-               if date:
-                   receipt_dict.update({"date":f"{date.group(2)}"})
+               self.retrieve_receipt_date(line,receipt_dict)
                    
-               # Looks for the time on the receipt 
-               time = self.time_search.search(line)
+               self.retrieve_receipt_total_cost(line,receipt_dict)
                
-               if time:
-                   receipt_dict.update({"time":f"{time.group(2)}"})
-                   break
-
-               # Looks for the total on the receipt
-               total_cost = self.total_search.search(line)
-
-               if total_cost:
-                   receipt_dict.update({"total":f"{total_cost.group(3)}"})
+               end_of_receipt = self.retrieve_receipt_time(line,receipt_dict)
+               
+               if end_of_receipt:
+                   break    
 
         # Constructs the dictionary for the receipt
         items_dict.update({"items":items})
@@ -255,17 +247,41 @@ class ReceiptReader:
         self.receipts.append(json_receipt)
 
         return json_receipt
+    
+    def retrieve_receipt_date(self,line,receipt_dict):
+        # Looks for the date on the receipt 
+        date = self.date_search.search(line)
+               
+        if date:
+            receipt_dict.update({"date":f"{date.group(2)}"})
+            return True
+        else:
+            return False
 
+    def retrieve_receipt_time(self,line,receipt_dict):
+        # Looks for the time on the receipt 
+        time = self.time_search.search(line)
+               
+        if time:
+            receipt_dict.update({"time":f"{time.group(2)}"})
+            return True
+        else:
+            return False
+    
+    def retrieve_receipt_total_cost(self,line,receipt_dict):
+        # Looks for the total on the receipt
+        total_cost = self.total_search.search(line)
+
+        if total_cost:
+            receipt_dict.update({"total":f"{total_cost.group(3)}"})
+            return True
+        else:
+            return False
 
 if __name__ == '__main__':
 
-    #receiptr = ReceiptReader(None)
-    #receiptr.read_receipt("lidl_receipt4.jpg")
-
-    total_search = re.compile(r"(TOTAL)(\s+)(\d{1,4}\.\d{1,2})")
-    match = total_search.search("TOTAL 3.0")
-    if match:
-        print(match.group(3))
+    print("This module is not meant to be run directly")
+    
     """
     #reading = sys.stdin.readline().strip()
     #print(f"Python got: {reading}")

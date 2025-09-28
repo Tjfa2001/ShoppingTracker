@@ -24,7 +24,15 @@ class FileHandler():
                 file.write(f"{line}\n")
 
     def rename(self,new_name,old_name):
-        os.rename(old_name,new_name)
+        if os.path.isfile(new_name):
+            print("Cannot overwrite pre-existing file")
+            return False
+        else:
+            try:
+                os.rename(old_name,new_name)
+                return True
+            except Exception as e:
+                print(f"Cannot rename {old_name} to {new_name}: {e}")
 
     def write_json_receipt_to_file(self,filename,json_receipt):
 

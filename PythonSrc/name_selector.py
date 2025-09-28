@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 import tkinter as tk
-import ShoppingTracker.PythonSrc.master_dictionary as md
+import master_dictionary as md
 
 class NameSelector():
 
@@ -12,10 +12,6 @@ class NameSelector():
     def __init__(self,item):
         self.item_confirm(item)
         self.master_dictionary = md.MasterDict()
-
-    def test_func(self,e):
-        name = e.widget.get()
-        print(name)
 
     def add_to_dictionary(self,e,item):
         new_item = e.widget.get()
@@ -34,3 +30,9 @@ class NameSelector():
         label2.pack()
         entry.bind("<Return>",lambda e: self.add_to_dictionary(e,item))
         mainloop()
+
+if __name__ == "__main__":
+    name_selector = NameSelector("Test Item")
+    print(name_selector.new_name)
+    #print(name_selector.master_dictionary.master)
+    #name_selector.master_dictionary.write_to_file(name_selector.master_dictionary.master)

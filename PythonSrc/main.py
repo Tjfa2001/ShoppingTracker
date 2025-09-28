@@ -1,8 +1,8 @@
-import ShoppingTracker.PythonSrc.receipt_reader as rr
-import ShoppingTracker.PythonSrc.my_logger as l
-import ShoppingTracker.PythonSrc.file_handler as fh
+import receipt_reader as rr
+import my_logger as l
+import file_handler as fh
 import validator as val
-import ShoppingTracker.PythonSrc.database_connector as dc
+import database_connector as dc
 from datetime import date
 
 # Main function to run the shopping tracker application
