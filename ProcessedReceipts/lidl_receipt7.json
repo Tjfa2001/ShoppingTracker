@@ -1,0 +1,27 @@
+{
+    "total": "6.58",
+    "date": "14/01/25",
+    "time": "13:18:51",
+    "items": [
+        {
+            "name": "Breakfast Muffins",
+            "price": "0.69"
+        },
+        {
+            "name": "Lidl Plus Discount",
+            "price": "-0.14"
+        },
+        {
+            "name": "Walkers Baked Crisps Cheese and Onion",
+            "price": "3.19"
+        },
+        {
+            "name": "Kitchen Towels",
+            "price": "1.19"
+        },
+        {
+            "name": "Filtered Milk",
+            "price": "1.65"
+        }
+    ]
+}

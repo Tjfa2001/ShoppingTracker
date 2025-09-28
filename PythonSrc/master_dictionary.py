@@ -4,7 +4,6 @@ import json
 class MasterDict:
 
     dictionary_location = None
-    #receipt_location = None
     master = None
 
     def __init__(self):
@@ -13,7 +12,6 @@ class MasterDict:
 
     def get_directories(self):
         self.dictionary_location = os.path.join(os.path.abspath("."),r"ShoppingTracker\MasterDictionary\MastDict.json")
-        #self.receipt_location = os.path.join(os.path.abspath(".",r"ShoppingTracker\Receipts"))
 
     def add_to_master():
         pass

@@ -61,8 +61,6 @@ class Validator():
             receipt = json.loads(json_receipt)
             
             if 'total' not in receipt:
-                print("NO TOTAL")
-                self.log_message("No total found on receipt")
                 return False
             else:
                 total_for_receipt = float(receipt["total"])

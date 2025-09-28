@@ -53,7 +53,12 @@ class DatabaseConnector():
         # Send validated receipt data to the database
         items=validated_receipt['items']
         total=validated_receipt['total']
-        discount=validated_receipt['discount']
+        
+        if 'discount' not in validated_receipt:
+            discount = 0
+        else:
+            discount=validated_receipt['discount']
+
         date_from_r=validated_receipt['date']
 
         date_pattern = re.compile(r'(\d+)/(\d+)/(\d+)')

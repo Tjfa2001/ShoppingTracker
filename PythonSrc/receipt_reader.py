@@ -24,17 +24,30 @@ class ReceiptReader:
     def __init__(self,logger):
         self.compile_regex()
         self.logger = logger
+        self.log(message="Receipt reader initialized")
         self.file_handler = fh.FileHandler()
 
+    def log(self,message):
+        if self.logger:
+            self.logger.log_message(message)
+            return True
+        else:
+            return False
+        
+    # Retrieves the receipts from the receipts directory
     def get_receipts(self):
 
+        # Lists to hold the receipts to be processed and the excluded files
         receipts = []
         excluded_files = []
 
+        # Loops through all the files in the receipts directory
         for file in os.listdir(self.receipt_dir):
             
+            # Full path to the receipt
             receipt_loc = os.path.join(self.receipt_dir,file)
 
+            # Check whether the file is a valid photo
             pass_extension_check = self.file_extension_check(file)
             pass_openable_photo_check = self.open_photo_check(file,self.receipt_dir)
 
@@ -128,8 +141,7 @@ class ReceiptReader:
     
         text = pytesseract.image_to_string(denoised,lang='eng')
         lines = [line for line in text.splitlines() if line.strip()]
-        
-        print(lines)
+
         json_receipt = self.extract_items(lines)
 
         return json_receipt
@@ -141,7 +153,7 @@ class ReceiptReader:
         self.date_search = re.compile(r"(Date:\s+)(\d{2}\/\d{2}\/\d{2})")
         self.item_search = re.compile(r"(.*\s)(-?\d{1,3}\.\d{2})")
         self.total_search = re.compile(r"(TOTAL)(\s+)(\d{1,4}\.\d{1,2})")
-        self.payment_search = re.compile(r"CARD", re.IGNORECASE)
+        self.payment_search = re.compile(r"(CARD)(\s+)(\d{1,4}\.\d{1,2})")
         self.discount_search = re.compile(r"(TOTAL DISCOUNT\s*)(\d{1,2}.\d{1,2})")
         self.quantity_check = re.compile(r"(\d{1,2})(\s?[xX]{1,2}\s*£\d{1,2}.\d{1,2})")
         self.weight_check = re.compile(r"(\d{1,2}\.\d{1,3})(\s?kg\s?@\s?£\s?)(\d{1,2}\.\d{1,2})")
@@ -160,9 +172,6 @@ class ReceiptReader:
 
                if match:
 
-                   # Looking for payment information to skip
-                   payment = self.payment_search.search(match.group())
-
                    # Retrieves the total cost on the receipt
                    total_cost = self.total_search.search(match.group())
 
@@ -176,13 +185,16 @@ class ReceiptReader:
                    elif total_cost:
                        receipt_dict.update({"total":f"{total_cost.group(3)}"})
 
-                   elif not payment and not total_cost:
+                   elif not total_cost:
                        
                        quantity_check = self.quantity_check.search(line)
                        
                        weight_check_next = self.weight_check.search(text[i+1])
                        
                        weight_check_current = self.weight_check.search(line)
+
+                       # Introduced as part of LidlTotalFix
+                       card_cost = self.payment_search.search(line)
 
                        # Checks whether there is a quantity given for the item bought
                        if quantity_check:
@@ -202,6 +214,9 @@ class ReceiptReader:
                        elif weight_check_current:
                            continue
                        
+                       elif card_cost:
+                           receipt_dict.update({"total":f"{card_cost.group(3)}"})
+
                        # In general, add the name and price only
                        else:
                            items.append({"name":f"{match.group(1)}".strip(),
@@ -214,10 +229,10 @@ class ReceiptReader:
                
                if date:
                    receipt_dict.update({"date":f"{date.group(2)}"})
-
+                   
                # Looks for the time on the receipt 
                time = self.time_search.search(line)
-
+               
                if time:
                    receipt_dict.update({"time":f"{time.group(2)}"})
                    break
@@ -234,13 +249,11 @@ class ReceiptReader:
 
         # (For testing purposes only) Prints out the dictionary in JSON format
         json_receipt_nice = json.dumps(receipt_dict,indent=4,ensure_ascii=False).encode("utf-8")
-        #print(json_receipt_nice.decode())
 
         # Adds the receipt to the list of the receipts to be processed
         json_receipt = json.dumps(receipt_dict)
         self.receipts.append(json_receipt)
 
-        #print(json_receipt)
         return json_receipt
 
 

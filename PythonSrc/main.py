@@ -13,7 +13,6 @@ def main():
     logger = l.Logger(file_handler)
     logger.log_message("File handler and logger created")
     reader = rr.ReceiptReader(logger)
-    logger.log_message("Receipt reader created")
     logger.log_message("Retrieving receipts")
     valid_receipts, excluded = reader.get_receipts()
     validator = val.Validator(logger)
