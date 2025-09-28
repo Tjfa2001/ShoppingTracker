@@ -1,8 +1,8 @@
-import receipt_reader as rr
-import my_logger as l
-import file_handler as fh
+import ShoppingTracker.PythonSrc.receipt_reader as rr
+import ShoppingTracker.PythonSrc.my_logger as l
+import ShoppingTracker.PythonSrc.file_handler as fh
 import validator as val
-import database_connector as dc
+import ShoppingTracker.PythonSrc.database_connector as dc
 from datetime import date
 
 # Main function to run the shopping tracker application
@@ -20,6 +20,7 @@ def main():
 
     if valid_receipts is None:
         logger.log_message("No files to process... Exiting")
+        
     else:
         #logger.log_message("Files to process:")
 
@@ -42,7 +43,5 @@ def main():
 
     logger.write_to_file()
 
-
 if __name__ == '__main__':
     main()
-    

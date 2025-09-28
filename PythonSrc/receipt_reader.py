@@ -6,7 +6,7 @@ import re
 #import my_logger as logger
 import sys
 import json
-import file_handler as fh
+import ShoppingTracker.PythonSrc.file_handler as fh
 import numpy as np
 
 class ReceiptReader:

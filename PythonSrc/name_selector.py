@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 import tkinter as tk
-import master_dictionary as md
+import ShoppingTracker.PythonSrc.master_dictionary as md
 
 class NameSelector():
 

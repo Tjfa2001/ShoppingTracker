@@ -1,5 +1,5 @@
-import master_dictionary as mast
-import name_selector as ns
+import ShoppingTracker.PythonSrc.master_dictionary as mast
+import ShoppingTracker.PythonSrc.name_selector as ns
 import json
 
 class Validator():
