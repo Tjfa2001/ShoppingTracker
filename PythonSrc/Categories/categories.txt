@@ -1,5 +1,2 @@
 Bread
-Cheese
-Frozen Foods
-Toys
-Vegetables
+Tomatos

@@ -21,9 +21,13 @@ class CategoryAssigner():
         self.remove_category()
         self.category = "Frozen Foods"
         self.add_category()
+    
+    def __init__(self):
+        self.item_name = None
+        self.category = None
+        self.open_item_file()
         
     def add_category(self):
-        
         self.categories.append(self.category)
         self.categories = sorted(self.categories)
         print(self.categories)
@@ -54,9 +58,12 @@ class CategoryAssigner():
         tk.mainloop()
         
     def remove_category(self):
+        if not self.category:
+            self.retrieve_category(text=f"Which category do you want to remove?")
+        
         self.categories.remove(self.category)
-        print(self.categories)
         self.write_categories_to_file()
+            
         
     def retrieve_category(self,text):
         # Setting up the GUI
@@ -113,7 +120,16 @@ class CategoryAssigner():
         if selected_index:
             self.category = Listbox.get(selected_index)
             self.root.destroy()
-            print(f"Category for {self.item_name} set to: {self.category}")
+            print(f"Selected category: {self.category}")
+        else:
+            print("No category selected.")
+            exit(1)
+            
+    def view_categories(self):
+        categories = self.open_category_file()
+        print("Current categories:")
+        for category in categories:
+            print(f"- {category}")
             
 if __name__ == "__main__":
     category_assigner = CategoryAssigner("Beetroot")
