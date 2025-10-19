@@ -11,6 +11,7 @@ class CategoryAssigner():
     category = ""
     categories = []
     
+    """
     def __init__(self, item_name):
         self.item_name = item_name
         self.category = None
@@ -20,22 +21,36 @@ class CategoryAssigner():
         self.retrieve_category(text=f"Which category do you want to remove?")
         self.remove_category()
         self.category = "Frozen Foods"
-        self.add_category()
+        self.add_category()"""
     
+    # Default constructor
     def __init__(self):
         self.item_name = None
         self.category = None
-        self.open_item_file()
-        
-    def add_category(self):
-        self.categories.append(self.category)
-        self.categories = sorted(self.categories)
-        print(self.categories)
-        self.write_categories_to_file()   
+        self.categories = self.open_category_file()
     
+    def assign_category_to_item(self):
+        if not self.item_name:
+            self.retrieve_item()
+        
+        if not self.category:
+            self.retrieve_category(text=f"What category does {self.item_name} belong to?")
+
+     
+    # Adds a new category to the categories.txt file    
+    def add_category(self):
+        if self.category not in self.categories:
+            self.categories.append(self.category)
+            self.categories = sorted(self.categories)
+            self.write_categories_to_file()
+        else:
+            print("Category already exists.")   
+    
+    # Returns the category from the category_assigner instance
     def get_category(self):
         return self.category
     
+    # Sets the item name based on user selection from the GUI
     def set_item(self, e, Listbox):
         selected_index = Listbox.curselection()
         if selected_index:
@@ -56,14 +71,15 @@ class CategoryAssigner():
             Listbox.insert(tk.END, item)    
         Listbox.bind("<Double-Button-1>", lambda e: self.set_item(e, Listbox))
         tk.mainloop()
-        
+    
+    # Removes a category from the categories.txt file    
     def remove_category(self):
+        # If no category is set, prompt the user to select one
         if not self.category:
             self.retrieve_category(text=f"Which category do you want to remove?")
         
         self.categories.remove(self.category)
         self.write_categories_to_file()
-            
         
     def retrieve_category(self,text):
         # Setting up the GUI
@@ -73,19 +89,20 @@ class CategoryAssigner():
         label.pack(pady=20)
         Listbox = tk.Listbox(self.root, font=("Arial", 15), height=10)
 
-        #categories = self.open_category_file()
         categories = sorted(self.open_category_file())
+        
         if not categories:
             categories = ["No categories found","Please add some"]
         
         self.categories = categories
+        
         for category in categories:
             Listbox.insert(tk.END, category)
         Listbox.pack(pady=10)
         Listbox.bind("<Double-Button-1>", lambda e: self.set_category(e, Listbox))
         tk.mainloop()
-        pass
     
+    # Retrieves the list of categories from categories.txt
     def open_category_file(self):
         
         # Get the absolute path to categories.txt
@@ -99,6 +116,7 @@ class CategoryAssigner():
         else:
             return []
     
+    # Retrieves the list of items from MastDict.json
     def open_item_file(self):
         item_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__),"..\\..\\MasterDictionary\\MastDict.json"))
         
@@ -110,6 +128,7 @@ class CategoryAssigner():
         else:
             return ["No items found","Please add some"]
 
+    # Writes the current list of categories to categories.txt
     def write_categories_to_file(self):
         path = os.path.abspath(os.path.join(os.path.dirname(__file__),"categories.txt"))
         with open(path, "w") as file:
@@ -125,6 +144,7 @@ class CategoryAssigner():
             print("No category selected.")
             exit(1)
             
+    # Prints all current categories to the console
     def view_categories(self):
         categories = self.open_category_file()
         print("Current categories:")

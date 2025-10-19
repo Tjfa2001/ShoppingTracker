@@ -18,7 +18,6 @@ def add_category():
     print(f"Assigned category: {category}")
 
 if __name__ == "__main__":
-    #option = select_option()
     option = '0'
     while option != '5':
         match option:
@@ -28,6 +27,7 @@ if __name__ == "__main__":
                 assigner.add_category()
             case '2':
                 assigner = ca.CategoryAssigner()
+                assigner.assign_category_to_item()
             case '3':
                 assigner = ca.CategoryAssigner() 
                 assigner.remove_category()
