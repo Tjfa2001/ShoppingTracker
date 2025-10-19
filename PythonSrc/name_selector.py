@@ -34,5 +34,3 @@ class NameSelector():
 if __name__ == "__main__":
     name_selector = NameSelector("Test Item")
     print(name_selector.new_name)
-    #print(name_selector.master_dictionary.master)
-    #name_selector.master_dictionary.write_to_file(name_selector.master_dictionary.master)

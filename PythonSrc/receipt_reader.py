@@ -279,7 +279,7 @@ class ReceiptReader:
             return False
 
 if __name__ == '__main__':
-
+    print(os.path.dirname(__file__))
     print("This module is not meant to be run directly")
     
     """
