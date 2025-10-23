@@ -28,22 +28,6 @@ class DatabaseConnector():
         self.connection.setdecoding(pyodbc.SQL_WCHAR,encoding='utf-8')
         return self
 
-    """
-    def callP(self):
-        cur = self.connection.cursor()
-        try:
-            p_date = date(2025,9,14)
-            p_now = datetime.now()
-            p_time = f"{p_now.hour}:{p_now.minute}:"
-            cur.execute('CALL insert_receipt(?,?,?,?,?);',("test_receipt4.jpg",10,0,p_date,p_time))
-            self.executeSQL("b")
-        except pyodbc.DatabaseError as err:
-            cur.rollback()
-            print(err.args[1])
-        finally:
-            cur.commit()
-    """
-
     def send_to_database(self,receipt_name,validated_receipt):
         # Send validated receipt data to the database
         items=validated_receipt['items']
@@ -120,6 +104,16 @@ class DatabaseConnector():
     def compile_regex(self):
         self.date_pattern = re.compile(r'(\d+)/(\d+)/(\d+)')
 
+    def update_category(self,item_name,category):
+        cur = self.connection.cursor()
+        try:
+            cur.execute('CALL lidl.update_category(?,?);',(item_name,category))
+        except pyodbc.DatabaseError as err:
+            cur.rollback()
+            print(err.args[1])
+        finally:
+            cur.commit()
+        
     def __exit__(self,exception_type,exception_value,exception_traceback): 
         # Close the database connection
         self.connection.close()

@@ -2,22 +2,7 @@ import sys
 from unittest import case
 import category_assigner as ca
 
-def select_option():
-    print("What would you like to do?")
-    option = input("""1: Add a new item category\
-                      \n2: Assign a category to an item\
-                      \n3: Remove an item category\
-                      \n4: View all categories\
-                      \n5: Exit\
-                      \nPlease enter the number of your choice: """)
-    return option
-
-def add_category():
-    assigner = ca.CategoryAssigner("Sample Item")
-    category = assigner.get_category()
-    print(f"Assigned category: {category}")
-
-if __name__ == "__main__":
+def run():
     option = '0'
     while option != '5':
         match option:
@@ -36,7 +21,28 @@ if __name__ == "__main__":
                 assigner.view_categories()          
             case '5':
                 print("Goodbye!")
+            case '0':
+                pass
             case _:
                 print("Invalid option selected.")
         option = select_option()
-        print(f"You selected option {option}")
+        if option != 0:
+            print(f"You selected option {option}")
+
+def select_option():
+    print("What would you like to do?")
+    option = input("""1: Add a new item category\
+                      \n2: Assign a category to an item\
+                      \n3: Remove an item category\
+                      \n4: View all categories\
+                      \n5: Exit\
+                      \nPlease enter the number of your choice: """)
+    return option
+
+def add_category():
+    assigner = ca.CategoryAssigner("Sample Item")
+    category = assigner.get_category()
+    print(f"Assigned category: {category}")
+
+if __name__ == "__main__":
+    run()

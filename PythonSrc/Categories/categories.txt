@@ -1,2 +1,5 @@
+Bakery Items
 Bread
+Fruit
 Tomato
+Vegetable

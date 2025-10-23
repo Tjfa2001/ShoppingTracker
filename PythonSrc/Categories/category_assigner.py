@@ -10,6 +10,8 @@ class CategoryAssigner():
     item_name = ""
     category = ""
     categories = []
+    dict_loc = None
+    dict = {}
     
     """
     def __init__(self, item_name):
@@ -28,6 +30,7 @@ class CategoryAssigner():
         self.item_name = None
         self.category = None
         self.categories = self.open_category_file()
+        self.dict_loc = os.path.join(os.path.dirname(__file__),"CategoryDict.json")
     
     def assign_category_to_item(self):
         if not self.item_name:
@@ -35,7 +38,20 @@ class CategoryAssigner():
         
         if not self.category:
             self.retrieve_category(text=f"What category does {self.item_name} belong to?")
+        
+        self.update_dictionary()
 
+    def update_dictionary(self):
+        file_exists = os.path.isfile(self.dict_loc)
+        
+        if file_exists:
+            with open(self.dict_loc,"r") as file:
+                self.dict = json.loads(file.read())
+
+        self.dict.update({f"{self.item_name}":f"{self.category}"})
+        
+        with open(self.dict_loc,"w") as file:
+            file.write(json.dumps(self.dict,indent=4))
      
     # Adds a new category to the categories.txt file    
     def add_category(self):
