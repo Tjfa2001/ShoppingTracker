@@ -19,6 +19,12 @@ class FileHandler():
 
     def write_logger_to_file(self,logger):
         log_name = "log"
+        # Ensure the log directory exists before writing
+        try:
+            os.makedirs(self.log_directory, exist_ok=True)
+        except Exception:
+            pass
+
         with open(os.path.join(self.log_directory,log_name),'w') as file:
             for line in logger.log:
                 file.write(f"{line}\n")

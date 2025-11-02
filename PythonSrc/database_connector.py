@@ -1,5 +1,7 @@
 import pyodbc
 import re
+import config
+import json
 from datetime import date, time, datetime
 
 class DatabaseConnector():
@@ -46,6 +48,19 @@ class DatabaseConnector():
         for item in items:
             name, price, quantity, cost = self.extract_item_info(item)
             self.send_to_item_table(receipt_name,name,price,quantity,cost)
+            
+            print(f"Processing item: {name}")
+            with open(config.categories_dict_file,"r") as category_dict:
+                category_dict = json.loads(category_dict.read())
+                print(category_dict)
+                if name in category_dict:
+                    category = category_dict[f"{name}"]
+                    print(f"Found category {category} for item: {name}")
+                else:
+                    print(f"No category found for item: {name}")
+                    category = ""
+                
+            self.update_category(item_name=name,category=category)
 
         self.send_to_receipt_table(receipt_name,total,discount,correct_date,time)
 

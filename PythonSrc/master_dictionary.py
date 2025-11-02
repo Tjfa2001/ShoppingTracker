@@ -31,6 +31,16 @@ class MasterDict:
             with open(self.dictionary_location,"r") as file:
                 self.master = file.read()
         else:
-            print("No dictionary to read :(")
+            # If the master dictionary file doesn't exist, initialize an empty dictionary
+            # and create the file so downstream code (like Validator) can json.loads() it.
+            empty = {}
+            self.master = json.dumps(empty)
+            try:
+                os.makedirs(os.path.dirname(self.dictionary_location), exist_ok=True)
+                with open(self.dictionary_location, "w") as file:
+                    file.write(self.master)
+            except Exception:
+                # If we can't write the file for some reason, keep master as an empty JSON string
+                pass
     
 m = MasterDict()

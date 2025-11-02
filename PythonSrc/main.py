@@ -17,13 +17,11 @@ def main():
     valid_receipts, excluded = reader.get_receipts()
     validator = val.Validator(logger)
     db_connect = dc.DatabaseConnector(logger)
-
-    if valid_receipts is None:
+    
+    if not valid_receipts:
         logger.log_message("No files to process... Exiting")
-        
     else:
-        #logger.log_message("Files to process:")
-
+        logger.log_message("Files to process!")
         for receipt in valid_receipts:
                 
                 logger.log_message(f"Reading receipt: {receipt}")

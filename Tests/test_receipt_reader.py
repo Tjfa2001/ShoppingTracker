@@ -8,6 +8,11 @@ import datetime
 def receipt_reader():
     return rr.ReceiptReader(l.Logger(fh.FileHandler()))
 
+@pytest.mark.parametrize("file_name, expected",[("receipt.jpg",True),("receipt.x",False),("receipt.jpeg",True),("receipt.png",True),("receipt",False)])
+def test_file_extension_check(receipt_reader, file_name, expected):
+    returned = receipt_reader.file_extension_check(file_name)
+    assert returned == expected
+
 def test_receipt_reader_init(receipt_reader):
     assert receipt_reader.logger is not None
     assert receipt_reader.first_name_check is True

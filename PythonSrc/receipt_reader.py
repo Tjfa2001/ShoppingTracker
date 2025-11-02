@@ -3,11 +3,11 @@ import cv2
 from PIL import Image
 import os
 import re
-#import my_logger as logger
 import sys
 import json
 import file_handler as fh
 import numpy as np
+import config
 
 class ReceiptReader:
 
@@ -15,7 +15,7 @@ class ReceiptReader:
     logger = None
     file_handler = None
     first_name_check = True
-    abspath = os.path.abspath(".")
+    abspath = os.path.join(config.dir,r"..\..")
     receipt_dir = os.path.join(abspath,r"ShoppingTracker\Receipts")
     excluded_dir = os.path.join(abspath,r"ShoppingTracker\Excluded")
     accepted_dir = os.path.join(abspath,r"ShoppingTracker\Accepted")
@@ -53,10 +53,14 @@ class ReceiptReader:
 
             # If the file passes both checks, rename it and add to receipts to be processed
             if pass_extension_check and pass_openable_photo_check:
+                self.logger.log_message(f"File passed file checks: {file}")
                 new_name = self.name_check(file)
-                self.file_handler.rename(os.path.join(self.receipt_dir,new_name),os.path.join(self.receipt_dir,file))
+                if new_name != file:
+                    self.logger.log_message(f"Renaming file {file} to {new_name}")
+                    self.file_handler.rename(os.path.join(self.receipt_dir,new_name),os.path.join(self.receipt_dir,file))
                 receipts.append(new_name)
             else:
+                self.logger.log_message(f"Excluding file: {file}")
                 excluded_files.append(file)     
                 self.file_handler.exclude(file)
 
@@ -71,29 +75,35 @@ class ReceiptReader:
             self.first_name_check = False
 
             # A list of all the processed receipts
-            all_processed = os.listdir(self.accepted_dir)
+            all_processed = os.listdir(self.accepted_dir) + os.listdir(self.excluded_dir)
             processed_numbers = []
             
+            # Loops through all the processed receipts to determine the last number used
             for receipt in all_processed:
                 
+                # Looks for the number in the receipt name
                 match = re.search(self.name_pattern,receipt)
                 
                 if match:
                     processed_number = int(match.group(2))
                     processed_numbers.append(processed_number)
 
-
+            # Orders the numbers in descending order to find the last one used
             processed_numbers.sort(reverse=True)
             last_number = processed_numbers[0] if processed_numbers else 0
 
             next_number = int(last_number) + 1
             self.next_number = next_number + 1
+        
+        # No need to determine the next number, just use the stored one
         else:
             next_number = self.next_number
             self.next_number = next_number + 1
 
+        # Retrieves the file extension
         file_extension = self.extension_pattern.search(file)
         
+        # Renames the file to the next in the sequence, maintaining the extension
         new_receipt_name = f"lidl_receipt{next_number}.{file_extension.group(2)}"
         
         return new_receipt_name
@@ -136,12 +146,15 @@ class ReceiptReader:
         # Threshold to make text stand out
         _, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
-        # Optional: remove noise
+        # Remove noise
         denoised = cv2.medianBlur(thresh, 3)
     
         text = pytesseract.image_to_string(denoised,lang='eng')
+        
+        # Remove empty lines from the text
         lines = [line for line in text.splitlines() if line.strip()]
 
+        # Extract the items from the receipt text
         json_receipt = self.extract_items(lines)
 
         return json_receipt

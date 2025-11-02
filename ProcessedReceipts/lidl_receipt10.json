@@ -1,0 +1,19 @@
+{
+    "total": "3.03",
+    "date": "02/01/25",
+    "time": "19:35:34",
+    "items": [
+        {
+            "name": "Tissues",
+            "price": "0.79"
+        },
+        {
+            "name": "Plain Bagels",
+            "price": "0.75"
+        },
+        {
+            "name": "Dark Chocolate KitKats",
+            "price": "1.49"
+        }
+    ]
+}
