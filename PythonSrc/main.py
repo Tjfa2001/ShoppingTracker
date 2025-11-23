@@ -42,4 +42,7 @@ def main():
     logger.write_to_file()
 
 if __name__ == '__main__':
+    
+    #x = dt.datetime.now()
+    #print(x.strftime("%d%m%Y"))
     main()

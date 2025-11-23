@@ -13,18 +13,6 @@ class CategoryAssigner():
     dict_loc = None
     dict = {}
     
-    """
-    def __init__(self, item_name):
-        self.item_name = item_name
-        self.category = None
-        self.open_item_file()
-        self.retrieve_item()
-        self.retrieve_category(text=f"What category does {self.item_name} belong to?")
-        self.retrieve_category(text=f"Which category do you want to remove?")
-        self.remove_category()
-        self.category = "Frozen Foods"
-        self.add_category()"""
-    
     # Default constructor
     def __init__(self):
         self.item_name = None
@@ -168,5 +156,5 @@ class CategoryAssigner():
             print(f"- {category}")
             
 if __name__ == "__main__":
-    category_assigner = CategoryAssigner("Beetroot")
+    category_assigner = CategoryAssigner()
     #print(category_assigner.get_category())

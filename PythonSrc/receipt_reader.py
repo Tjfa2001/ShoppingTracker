@@ -15,10 +15,13 @@ class ReceiptReader:
     logger = None
     file_handler = None
     first_name_check = True
-    abspath = os.path.join(config.dir,r"..\..")
-    receipt_dir = os.path.join(abspath,r"ShoppingTracker\Receipts")
-    excluded_dir = os.path.join(abspath,r"ShoppingTracker\Excluded")
-    accepted_dir = os.path.join(abspath,r"ShoppingTracker\Accepted")
+    abspath = os.path.join(config.projectDirectory)
+    receipt_dir = config.receiptsDirectory
+    #os.path.join(abspath,r"Receipts")
+    excluded_dir = config.excludedReceiptsDirectory
+    #os.path.join(abspath,r"Excluded")
+    accepted_dir = config.acceptedReceiptsDirectory
+    #os.path.join(abspath,r"Accepted")
     next_number = 0
 
     def __init__(self,logger):

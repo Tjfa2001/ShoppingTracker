@@ -1,6 +1,8 @@
 import os
 import json
 import re
+import datetime as dt
+import config
 
 class FileHandler():
 
@@ -18,13 +20,15 @@ class FileHandler():
         self.filename_search = re.compile(r"(\w+)\.(\w+)")
 
     def write_logger_to_file(self,logger):
-        log_name = "log"
+        
+        date = dt.datetime.now().strftime("%d%m%Y")
+        log_name = f"log_{date}"
         # Ensure the log directory exists before writing
         try:
             os.makedirs(self.log_directory, exist_ok=True)
         except Exception:
             pass
-
+        
         with open(os.path.join(self.log_directory,log_name),'w') as file:
             for line in logger.log:
                 file.write(f"{line}\n")
@@ -77,12 +81,12 @@ class FileHandler():
 
     def get_directories(self):
         # Set up directories
-        self.processed_directory = os.path.join(os.path.abspath("."),r"ShoppingTracker\ProcessedReceipts") 
-        self.receipt_directory = os.path.join(os.path.abspath("."),r"ShoppingTracker\Receipts")
-        self.accepted_directory = os.path.join(os.path.abspath("."),r"ShoppingTracker\Accepted")
-        self.excluded_directory = os.path.join(os.path.abspath("."),r"ShoppingTracker\Excluded")
-        self.log_directory = os.path.join(os.path.abspath("."),r"ShoppingTracker\Logs")
-        
+        self.processed_directory = config.processedReceiptsDirectory 
+        self.receipt_directory = config.receiptsDirectory
+        self.accepted_directory = config.acceptedReceiptsDirectory
+        self.excluded_directory = config.excludedReceiptsDirectory
+        #self.log_directory = os.path.join(os.path.abspath("."),r"ShoppingTracker\Logs")
+        self.log_directory = config.logDirectory
 
 if __name__ == '__main__':
     fh = FileHandler()
