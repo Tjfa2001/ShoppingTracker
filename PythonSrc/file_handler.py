@@ -1,6 +1,7 @@
 import os
 import json
 import re
+from datetime import datetime
 
 class FileHandler():
 
@@ -18,7 +19,9 @@ class FileHandler():
         self.filename_search = re.compile(r"(\w+)\.(\w+)")
 
     def write_logger_to_file(self,logger):
-        log_name = "log"
+        date_and_time = datetime.now()
+        timestamp = datetime.strftime("%d%m%Y_%H%M%S")
+        log_name = f"log_{timestamp}"
         # Ensure the log directory exists before writing
         try:
             os.makedirs(self.log_directory, exist_ok=True)
