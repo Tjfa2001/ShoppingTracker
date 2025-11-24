@@ -12,12 +12,7 @@ class DatabaseConnector():
 
     def __init__(self,logger):
         # Connect to your postgres DB
-        self.connection = pyodbc.connect("""Driver={PostgreSQL UNICODE};
-                                            Server=localhost;
-                                            Port=5432;
-                                            Database=lidl_receipts;
-                                            Uid=postgres;
-                                            Pwd=postgres;""")
+        self.connection = pyodbc.connect(config.databaseConnectionString)
         self.logger = logger
         self.logger.log_message("Database connection established")
         self.compile_regex()

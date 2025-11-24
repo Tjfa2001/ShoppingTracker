@@ -17,12 +17,9 @@ class ReceiptReader:
     first_name_check = True
     abspath = os.path.join(config.projectDirectory)
     receipt_dir = config.receiptsDirectory
-    #os.path.join(abspath,r"Receipts")
     excluded_dir = config.excludedReceiptsDirectory
-    #os.path.join(abspath,r"Excluded")
     accepted_dir = config.acceptedReceiptsDirectory
-    #os.path.join(abspath,r"Accepted")
-    next_number = 0
+    next_receipt_number = 0
 
     def __init__(self,logger):
         self.compile_regex()
@@ -30,6 +27,7 @@ class ReceiptReader:
         self.log(message="Receipt reader initialized")
         self.file_handler = fh.FileHandler()
 
+    # Logs a message to the log file
     def log(self,message):
         if self.logger:
             self.logger.log_message(message)
@@ -96,12 +94,12 @@ class ReceiptReader:
             last_number = processed_numbers[0] if processed_numbers else 0
 
             next_number = int(last_number) + 1
-            self.next_number = next_number + 1
+            self.next_receipt_number = next_number + 1
         
         # No need to determine the next number, just use the stored one
         else:
-            next_number = self.next_number
-            self.next_number = next_number + 1
+            next_number = self.next_receipt_number
+            self.next_receipt_number = next_number + 1
 
         # Retrieves the file extension
         file_extension = self.extension_pattern.search(file)
@@ -124,6 +122,8 @@ class ReceiptReader:
     # Chceks whether the file has the right extension for a photo
     def file_extension_check(self,file):
 
+        
+        
         right_extension = self.extension_check.search(file)
 
         if right_extension:

@@ -19,3 +19,11 @@ receiptsDirectory = os.path.join(projectDirectory,"Receipts")
 
 # Logger Variable
 logDirectory = os.path.join(projectDirectory,"Logs")
+
+# Database Variables
+databaseConnectionString = """Driver={PostgreSQL UNICODE};
+                              Server=localhost;
+                              Port=5432;
+                              Database=lidl_receipts;
+                              Uid=postgres;
+                              Pwd=postgres;"""
