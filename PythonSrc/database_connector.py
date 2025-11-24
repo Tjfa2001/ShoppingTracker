@@ -35,8 +35,8 @@ class DatabaseConnector():
         else:
             discount=validated_receipt['discount']
 
-        date_from_r=validated_receipt['date']
-        correct_date = date.fromisoformat(self.format_date_for_db(self.date_pattern.search(date_from_r)))
+        date_from_receipt=validated_receipt['date']
+        correct_date = date.fromisoformat(self.format_date_for_db(self.date_pattern.search(date_from_receipt)))
 
         time=validated_receipt['time']
 
@@ -59,19 +59,23 @@ class DatabaseConnector():
 
         self.send_to_receipt_table(receipt_name,total,discount,correct_date,time)
 
+    # Extracts item information from an item JSON object
     def extract_item_info(self,item):
         name = item['name']
 
+        # If there is a price per kilogram, extract this, otherwise extract the price
         if "ppkg" in item:
             price = item['ppkg']
         else:
             price = item['price']
-            
+        
+        # If there is a quantity, extract this, otherwise set to 1
         if "quantity" in item:
             quantity = item['quantity']
         else:
             quantity = 1
-            
+        
+        # Multiply the quantity by the price to get the total cost for that item
         cost = int(quantity) * float(price)
         
         return name, price, quantity, cost
