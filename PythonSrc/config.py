@@ -5,7 +5,7 @@ projectDirectory = os.path.dirname(pythonSource)
 dictionaryLocation = os.path.join(pythonSource,"CategoryDict.json")
 
 # Master Dictionary Locations
-masterDictionaryLocation = os.path.join(projectDirectory,"MasterDictionary")
+masterDictionaryLocation = os.path.join(projectDirectory,"MasterDictionary\MastDict.json")
 
 # Categories Locations
 categoriesDictFile = os.path.join(pythonSource,"Categories\CategoryDict.json")

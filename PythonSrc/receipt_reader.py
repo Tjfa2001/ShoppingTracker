@@ -121,8 +121,6 @@ class ReceiptReader:
 
     # Chceks whether the file has the right extension for a photo
     def file_extension_check(self,file):
-
-        
         
         right_extension = self.extension_check.search(file)
 
@@ -136,9 +134,10 @@ class ReceiptReader:
     # Reads the receipt provided to the file
     def read_receipt(self,receipt):
     
-        file_path=os.path.dirname(__file__)
-        relative_path="..\\Receipts\\" + receipt
-        path=file_path+"\\"+relative_path
+        #file_path=os.path.dirname(__file__)
+        file_path = self.receipt_dir
+        #relative_path="..\\Receipts\\" + receipt
+        path=file_path+"\\"+receipt
 
         pytesseract.pytesseract.tesseract_cmd = r'C:/Program Files/Tesseract-OCR/tesseract.exe'
         image = cv2.imread(path)
@@ -256,7 +255,7 @@ class ReceiptReader:
         receipt_dict.update(items_dict)
 
         # (For testing purposes only) Prints out the dictionary in JSON format
-        json_receipt_nice = json.dumps(receipt_dict,indent=4,ensure_ascii=False).encode("utf-8")
+        #json_receipt_nice = json.dumps(receipt_dict,indent=4,ensure_ascii=False).encode("utf-8")
 
         # Adds the receipt to the list of the receipts to be processed
         json_receipt = json.dumps(receipt_dict)

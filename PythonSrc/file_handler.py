@@ -20,8 +20,7 @@ class FileHandler():
         self.filename_search = re.compile(r"(\w+)\.(\w+)")
 
     def write_logger_to_file(self,logger):
-        date_and_time = datetime.now()
-        timestamp = datetime.strftime("%d%m%Y_%H%M%S")
+        timestamp = datetime.now().strftime("%d%m%Y_%H%M%S")
         log_name = f"log_{timestamp}"
         # Ensure the log directory exists before writing
         try:

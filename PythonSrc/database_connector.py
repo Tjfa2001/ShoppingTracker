@@ -45,7 +45,7 @@ class DatabaseConnector():
             self.send_to_item_table(receipt_name,name,price,quantity,cost)
             
             print(f"Processing item: {name}")
-            with open(config.categories_dict_file,"r") as category_dict:
+            with open(config.categoriesDictFile,"r") as category_dict:
                 category_dict = json.loads(category_dict.read())
                 print(category_dict)
                 if name in category_dict:
