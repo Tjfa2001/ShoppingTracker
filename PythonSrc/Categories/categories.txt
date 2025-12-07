@@ -1,5 +1,5 @@
 Bakery Items
 Bread
 Fruit
-Tomato
+Household Items
 Vegetable

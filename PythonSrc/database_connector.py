@@ -13,10 +13,10 @@ class DatabaseConnector():
     def __init__(self,logger):
         # Connect to your postgres DB
         self.connection = pyodbc.connect(config.databaseConnectionString)
-        self.logger = logger
+        if logger:
+            self.logger = logger
         self.logger.log_message("Database connection established")
         self.compile_regex()
-
 
     def __enter__(self):
         # Set encoding for the connection
