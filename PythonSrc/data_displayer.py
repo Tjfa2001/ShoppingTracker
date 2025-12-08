@@ -12,8 +12,10 @@ class DataDisplayer():
     root = None
     conn = None
     data = None
+    sql = None
     
-    def __init__(self,connector):
+    def __init__(self,connector,sql):
+        self.sql = sql
         self.conn = connector
         self.root = tk.Tk()
         self.root.title = "Data Displayer 1.0"
@@ -26,9 +28,9 @@ class DataDisplayer():
         #self.root.mainloop()
     
     def loadData(self):
-        data = pd.read_sql(sql="SELECT category, SUM(cost) as spend FROM lidl.items WHERE category is not null GROUP BY category;",con=self.conn.connection)
+        data = pd.read_sql(sql=self.sql,con=self.conn.connection)
         self.data = data
-        self.data['spend'] = data['spend'].apply(lambda x: round(x, 2))
+        #self.data['spend'] = data['spend'].apply(lambda x: round(x, 2))
         #self.writeDataToFile(self.data)
         
     def writeDataToFile(self,dataframe:pd.DataFrame):

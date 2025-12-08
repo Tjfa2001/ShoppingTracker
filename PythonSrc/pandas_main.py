@@ -6,6 +6,8 @@ import data_displayer as dd
 import pandas as pd
 import sqlalchemy as sqa
 import psycopg2
+import datetime as dt
+import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
     
@@ -17,13 +19,45 @@ if __name__ == '__main__':
     
     engine = sqa.create_engine("postgresql://postgres:postgres@localhost/lidl_receipts")
     connect = engine.connect()
+    
+    sql_statement = """
+    SELECT
+    i.*,
+    r.date
+    FROM
+    lidl.items i
+    INNER JOIN
+    lidl.receipts r
+    ON 
+    i.receipt = r.receipt;
+    """
+    
     # You can uncomment this to get the GUI to pop up
-    data_disp = dd.DataDisplayer(connect)
+    #data_disp = dd.DataDisplayer(connect,sql=sql_statement)
+    """
+    df = pd.read_csv('dataframe_with_dates.csv')
+    df['date'] = pd.to_datetime(df['date'])
+    df['month'] = df['date'].dt.strftime('%b')
+    df['year'] = df['date'].dt.strftime('%Y')
     
-    #df = pd.read_csv('dataframe.csv')
-    #print(df)
+    df = df[['month','year','cost']]
+    df = df.groupby(by=['month','year']).sum()
     
-    #data_disp.conn = connector
+    df.to_csv('dataframe_by_months.csv')
+    """
+    
+    df = pd.read_csv('dataframe_by_months.csv')
+    df['month_year'] = pd.to_datetime(df['year'].astype(str)+'-'+df['month'].astype(str)).dt.strftime('%b-%Y')
+    df['month'] = pd.to_datetime('2025-' + df['month'].astype(str)).dt.strftime('%m')
+    df = df.sort_values(by=['year','month'])
+    print(df)
+    df.plot(x='month_year', y='cost', kind='bar', title='Monthly Costs')
+    plt.ylabel('Cost (£)')
+    plt.xlabel('Month')
+    plt.show()
+    
+    print("PLOTTED")
+    
     """
     dataframe = pd.read_sql("SELECT * FROM lidl.items;",con=connector.connection)
     printing = dataframe.sort_values("item", ascending=True)
