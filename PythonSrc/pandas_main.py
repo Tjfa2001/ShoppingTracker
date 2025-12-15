@@ -10,8 +10,6 @@ import datetime as dt
 import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
-    
-    
 
     file_h = fh.FileHandler()
     logger_t = logger.Logger(file_h)
@@ -20,7 +18,7 @@ if __name__ == '__main__':
     engine = sqa.create_engine("postgresql://postgres:postgres@localhost/lidl_receipts")
     connect = engine.connect()
     
-    sql_statement = """
+    sql_statement1 = """
     SELECT
     i.*,
     r.date
@@ -32,8 +30,21 @@ if __name__ == '__main__':
     i.receipt = r.receipt;
     """
     
+    sql_statement2 = """
+    SELECT
+    i.category,
+    r.date,
+    sum(i.cost) as total_cost
+    FROM
+    lidl.items i
+    LEFT JOIN
+    lidl.receipts r
+    ON i.receipt = r.receipt
+    GROUP BY
+    r.date, i.category;
+    """
     # You can uncomment this to get the GUI to pop up
-    #data_disp = dd.DataDisplayer(connect,sql=sql_statement)
+    data_disp = dd.DataDisplayer(connect,sql=sql_statement2)
     """
     df = pd.read_csv('dataframe_with_dates.csv')
     df['date'] = pd.to_datetime(df['date'])
@@ -46,6 +57,10 @@ if __name__ == '__main__':
     df.to_csv('dataframe_by_months.csv')
     """
     
+    #
+    # Me playing around to display spend by month in matplotlib
+    #
+    #"""
     df = pd.read_csv('dataframe_by_months.csv')
     df['month_year'] = pd.to_datetime(df['year'].astype(str)+'-'+df['month'].astype(str)).dt.strftime('%b-%Y')
     df['month'] = pd.to_datetime('2025-' + df['month'].astype(str)).dt.strftime('%m')
@@ -57,6 +72,7 @@ if __name__ == '__main__':
     plt.show()
     
     print("PLOTTED")
+    #"""
     
     """
     dataframe = pd.read_sql("SELECT * FROM lidl.items;",con=connector.connection)

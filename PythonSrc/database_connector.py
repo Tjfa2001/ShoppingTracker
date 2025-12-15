@@ -47,12 +47,14 @@ class DatabaseConnector():
             print(f"Processing item: {name}")
             with open(config.categoriesDictFile,"r") as category_dict:
                 category_dict = json.loads(category_dict.read())
-                print(category_dict)
+                #print(category_dict)
                 if name in category_dict:
                     category = category_dict[f"{name}"]
-                    print(f"Found category {category} for item: {name}")
+                    self.logger.log_message(f"Found category {category} for item: {name}")
+                    #print(f"Found category {category} for item: {name}")
                 else:
-                    print(f"No category found for item: {name}")
+                    self.logger.log_message(f"No category found for item: {name}")
+                    #print(f"No category found for item: {name}")
                     category = ""
                 
             self.update_category(item_name=name,category=category)
@@ -144,7 +146,3 @@ if __name__ == '__main__':
             iso_date = f"{year}-{month}-{day}"
 
         d = date.fromisoformat(iso_date)    
-        
-         
-         
-

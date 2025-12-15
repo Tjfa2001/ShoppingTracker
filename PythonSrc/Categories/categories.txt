@@ -2,4 +2,5 @@ Bakery Items
 Bread
 Fruit
 Household Items
+Pasta
 Vegetable

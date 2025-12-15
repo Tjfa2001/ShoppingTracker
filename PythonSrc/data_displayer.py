@@ -23,13 +23,14 @@ class DataDisplayer():
         self.loadData()
         time_combo = ttk.Combobox(master=self.root,values=["Year","Month","Day"])
         time_combo.pack()
-        destroy = tk.Button(self.root,command=self.writeDataToFile(self.data),text='Destroy!',width=50)
+        destroy = tk.Button(self.root,command=self.loadData,text='Load Data',width=50)
         destroy.pack()
         #self.root.mainloop()
     
     def loadData(self):
         data = pd.read_sql(sql=self.sql,con=self.conn.connection)
         self.data = data
+        print(data)
         #self.data['spend'] = data['spend'].apply(lambda x: round(x, 2))
         #self.writeDataToFile(self.data)
         

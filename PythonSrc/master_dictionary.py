@@ -13,7 +13,6 @@ class MasterDict:
 
     def get_directories(self):
         self.dictionary_location = config.masterDictionaryLocation
-        #self.dictionary_location = os.path.join(os.path.abspath("."),r"ShoppingTracker\MasterDictionary\MastDict.json")
 
     def add_to_master():
         pass
