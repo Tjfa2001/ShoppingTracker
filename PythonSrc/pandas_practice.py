@@ -35,4 +35,5 @@ print(data)
 
 axs[1,1].plot(xdata,ydata,label="Sin(x)")
 
+plt.tight_layout()
 plt.show()

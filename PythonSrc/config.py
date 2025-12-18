@@ -27,3 +27,23 @@ databaseConnectionString = """Driver={PostgreSQL UNICODE};
                               Database=lidl_receipts;
                               Uid=postgres;
                               Pwd=postgres;"""
+                              
+# Data Displayer Settings
+geometry = '2000x1000'
+dataDisplayerTitle = 'Toms Data Displayer'
+
+monthSQL = """
+    SELECT
+    i.category,
+    date_part('month',r.date) as month,
+    date_part('year',r.date) as year,
+    sum(i.cost) as total_cost
+    FROM
+    lidl.items i
+    LEFT JOIN
+    lidl.receipts r
+    ON i.receipt = r.receipt
+    GROUP BY
+    date_part('month',r.date),
+    date_part('year',r.date), i.category;
+    """
