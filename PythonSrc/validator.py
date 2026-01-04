@@ -4,13 +4,13 @@ import json
 
 class Validator():
 
-    master_dictionary = None
+    mast_dict_json = None
     mast_dict_obj = None
     logger = None
 
     def __init__(self, logger):
         self.mast_dict_obj = mast.MasterDict()
-        self.master_dictionary = json.loads(self.mast_dict_obj.master)
+        self.mast_dict_json = json.loads(self.mast_dict_obj.master)
         self.logger = logger
 
     def validate_receipt(self,json_receipt):
@@ -35,23 +35,24 @@ class Validator():
 
             item_name = item["name"]
 
-            if item_name in self.master_dictionary:
-                new_name = self.master_dictionary[item_name]
+            if item_name in self.mast_dict_json:
+                new_name = self.mast_dict_json[item_name]
                 
             else:
                 self.log_message(f"{item_name} not in Dictionary")
                 name_selector = ns.NameSelector(item_name) 
                 new_name = name_selector.new_name
                 self.log_message(f"Got {new_name} from user")
-                self.master_dictionary.update({item_name:new_name})
+                self.mast_dict_json.update({item_name:new_name})
+                self.mast_dict_obj.update(item_name,new_name)
 
             if new_name is None:
                 self.log_message("Not changing name")
-            elif item_name != self.master_dictionary[item_name]:
-                self.log_message(f"Changing {item_name} to {self.master_dictionary[item_name]}")    
-                receipt_items[i]["name"] = self.master_dictionary[item_name]
+            elif item_name != self.mast_dict_json[item_name]:
+                self.log_message(f"Changing {item_name} to {self.mast_dict_json[item_name]}")    
+                receipt_items[i]["name"] = self.mast_dict_json[item_name]
 
-        self.mast_dict_obj.write_to_file(self.master_dictionary)
+        self.mast_dict_obj.write_to_file()
         dictionary["items"] = receipt_items
         
         return dictionary
