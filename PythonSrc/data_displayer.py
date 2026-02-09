@@ -19,12 +19,25 @@ class DataDisplayer():
     canvas = None
     time_combo = None
     first = True
+    mode = None
     
     def __init__(self,connector,sql):
         self.sql = sql
         self.conn = connector
         self.root = tk.Tk()
+        self.mode = "Month Grouping"
         
+        frame = tk.Frame(master = self.root,bg='skyblue',width=500,height=300)
+        frame.pack(padx=100, pady=100,fill='x',side=tk.LEFT)
+        
+        frame2 = tk.Frame(master = self.root, bg='red',width=500, height=500)
+        frame2.pack(padx=50,pady=50,side=tk.RIGHT,fill='y')
+        
+        left_button = tk.Button(master=frame2,text="<",width=50,height=50)
+        right_button = tk.Button(master=frame2,text=">",width=50,height=50)
+        
+        left_button.pack()
+        right_button.pack()
         # Loads settings from the config file
         self.loadSettings()
         
@@ -39,16 +52,21 @@ class DataDisplayer():
     def loadSettings(self):
         self.root.geometry(cf.geometry)
         self.root.title = cf.dataDisplayerTitle
-        pass
     
     def loadData(self):
         data = pd.read_sql(sql=self.sql,con=self.conn.connection)
         self.data = data
-        if self.first == True:
-            self.extractMonthData(9,2025)
-            self.first = False
-        else:
-            self.extractMonthData(12,2025)
+        match self.mode:
+            case "Month Grouping":
+                if self.first == True:
+                    self.extractMonthData(9,2025)
+                    self.first = False
+                else:
+                    month = int(input("What is the month you would like to look at?"))
+                    year = int(input("What year would you like to look at?"))
+                    self.extractMonthData(month,year)
+            case _:
+                pass
         
     def writeDataToFile(self,dataframe:pd.DataFrame):
         print(dataframe)

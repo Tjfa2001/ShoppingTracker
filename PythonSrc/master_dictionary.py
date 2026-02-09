@@ -28,7 +28,8 @@ class MasterDict:
     def write_to_file(self,new_master):
         self.master = new_master
         with open(self.dictionary_location,"w") as file:
-            file.write(json.dumps(new_master,indent=4))"""
+            file.write(json.dumps(new_master,indent=4))
+    """
 
     def write_to_file(self):
         with open(self.dictionary_location,"w") as file:
