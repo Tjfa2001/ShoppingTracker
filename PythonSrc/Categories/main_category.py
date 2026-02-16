@@ -1,11 +1,12 @@
 import sys
-from unittest import case
+#from unittest import case
 import category_assigner as ca
 import pyodbc as pdbc
 import config
 import os
 import json
 
+# Main method that loops through options that you can choose when this module is run
 def run():
     option = '0'
     while option != '6':
@@ -53,12 +54,15 @@ def select_option():
                       \nPlease enter the number of your choice: """)
     return option
 
+# Updates the database with a category for a given item
 def update_database(item_name,category):
+    
     connection = pdbc.connect(config.databaseConnectionString)
     connection.setencoding(encoding='utf-8')
     connection.setdecoding(pdbc.SQL_CHAR,encoding='utf-8')
     connection.setdecoding(pdbc.SQL_WCHAR,encoding='utf-8')
     cur = connection.cursor()
+    
     try:
         cur.execute('CALL lidl.update_category(?,?);',(item_name,category))
     except pdbc.DatabaseError as err:
@@ -67,6 +71,7 @@ def update_database(item_name,category):
     finally:
         cur.commit()
 
+# Adds a category to the list of possible categories
 def add_category():
     assigner = ca.CategoryAssigner("Sample Item")
     category = assigner.get_category()

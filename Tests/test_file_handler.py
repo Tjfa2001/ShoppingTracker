@@ -14,7 +14,7 @@ def test_get_directories(file_handler):
     assert file_handler.excluded_directory is not None
     assert file_handler.log_directory is not None
 
-@pytest.mark.parametrize("filename,expected", [("not_a_file", None), ("testfile.txt","This is a test file.")])
+@pytest.mark.parametrize("filename,expected", [("not_a_file", ""), ("testfile.txt","This is a test file.")])
 def test_read_from_file(file_handler,tmp_path,filename,expected):
     test_file = tmp_path / filename
     if expected is not None:

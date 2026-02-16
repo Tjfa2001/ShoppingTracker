@@ -28,7 +28,7 @@ def test_name_check(receipt_reader,tmp_path):
 def test_receipt_reader_init(receipt_reader):
     assert receipt_reader.logger is not None
     assert receipt_reader.first_name_check is True
-    assert receipt_reader.next_number == 0
+    assert receipt_reader.next_receipt_number == 0
     assert receipt_reader.receipt_dir is not None
     assert receipt_reader.accepted_dir is not None
     assert receipt_reader.excluded_dir is not None

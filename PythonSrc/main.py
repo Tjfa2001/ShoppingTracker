@@ -41,5 +41,6 @@ def main():
 
     logger.write_to_file()
 
+# This module is intended to be run directly
 if __name__ == '__main__':
     main()
