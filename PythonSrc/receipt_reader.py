@@ -181,6 +181,7 @@ class ReceiptReader:
         receipt_dict = {}
         items = []
         items_dict = {}
+        num_rows = len(text) - 1
 
         for i, line in enumerate(text):
                
@@ -206,7 +207,10 @@ class ReceiptReader:
                        
                        quantity_check = self.quantity_check.search(line)
                        
-                       weight_check_next = self.weight_check.search(text[i+1])
+                       if i != num_rows:
+                           weight_check_next = self.weight_check.search(text[i+1])
+                       else: 
+                           weight_check_next = False
                        
                        weight_check_current = self.weight_check.search(line)
 

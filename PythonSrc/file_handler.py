@@ -98,7 +98,10 @@ class FileHandler():
         """
         
         match = self.filename_search.search(filename)
-        new_name = match.group(1) + ".json"
+        if match:
+            new_name = match.group(1) + ".json"
+        else:
+            raise RuntimeError
 
         file_loc = os.path.join(self.processed_directory,new_name)
         
@@ -107,6 +110,8 @@ class FileHandler():
                 file.write(json.dumps(json_receipt,indent = 4))
         except OSError:
             print(f"Unable to write to file {file_loc}")
+            raise OSError
+            
 
     def accept(self,filename):
         """
