@@ -23,6 +23,7 @@ class Logger:
     # Write the log messages to a file using the FileHandler
     def write_to_file(self):
         self.file_handler.write_logger_to_file(self)
+        return "j"
 
     # Get the current time formatted as a string
     def get_time(self):

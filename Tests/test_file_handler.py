@@ -1,10 +1,10 @@
 import pytest
 import os
-import my_logger as ml
+from PythonSrc import my_logger as ml
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def file_handler():
-    import file_handler as fh
+    from PythonSrc import file_handler as fh
     return fh.FileHandler()
 
 @pytest.fixture

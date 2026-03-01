@@ -11,8 +11,11 @@ class MasterDict:
     def __init__(self):
         self.get_directories()
         self.read_from_file()
-        self.mast_dict_json = json.loads(self.master)
+        self.load_file_to_json()
 
+    def load_file_to_json(self):
+        self.mast_dict_json = json.loads(self.master)
+    
     def get_directories(self):
         self.dictionary_location = config.masterDictionaryLocation
 
