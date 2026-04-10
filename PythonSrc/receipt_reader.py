@@ -54,14 +54,14 @@ class ReceiptReader:
 
             # If the file passes both checks, rename it and add to receipts to be processed
             if pass_extension_check and pass_openable_photo_check:
-                self.logger.log_message(f"File passed file checks: {file}")
+                self.log(f"File passed file checks: {file}")
                 new_name = self.name_check(file)
                 if new_name != file:
-                    self.logger.log_message(f"Renaming file {file} to {new_name}")
+                    self.log(f"Renaming file {file} to {new_name}")
                     self.file_handler.rename(os.path.join(self.receipt_dir,new_name),os.path.join(self.receipt_dir,file))
                 receipts.append(new_name)
             else:
-                self.logger.log_message(f"Excluding file: {file}")
+                self.log.log_message(f"Excluding file: {file}")
                 excluded_files.append(file)     
                 self.file_handler.exclude(file)
 
@@ -113,10 +113,10 @@ class ReceiptReader:
     def open_photo_check(self,file,dir):
         try:
             Image.open(os.path.join(dir,file))
-            self.logger.log_message(f"File {file} passed image opening test")
+            self.log(f"File {file} passed image opening test")
             return True
         except:
-            self.logger.log_message(f"File {file} failed image opening test")
+            self.log(f"File {file} failed image opening test")
         return False
 
     # Chceks whether the file has the right extension for a photo
@@ -125,18 +125,16 @@ class ReceiptReader:
         right_extension = self.extension_check.search(file)
 
         if right_extension:
-            self.logger.log_message(f"File {file} passed extension test")
+            self.log(f"File {file} passed extension test")
             return True
         else:
-            self.logger.log_message(f"File {file} failed extension test")
+            self.log(f"File {file} failed extension test")
             return False
 
     # Reads the receipt provided to the file
     def read_receipt(self,receipt):
     
-        #file_path=os.path.dirname(__file__)
         file_path = self.receipt_dir
-        #relative_path="..\\Receipts\\" + receipt
         path=file_path+"\\"+receipt
 
         pytesseract.pytesseract.tesseract_cmd = r'C:/Program Files/Tesseract-OCR/tesseract.exe'

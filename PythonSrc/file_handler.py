@@ -11,6 +11,8 @@ class FileHandler():
     logging, moving receipts into the correct directories and renaming files.
     
     """
+    
+    logger = None
 
     def __init__(self,
         processed_directory: str | None = None,
@@ -59,7 +61,7 @@ class FileHandler():
         try:
             os.makedirs(self.log_directory, exist_ok=True)
         except OSError:
-            print("File Handler unable to make directory")
+            self.log("File Handler unable to make directory")
         
         with open(os.path.join(self.log_directory,log_name),'w') as file:
             for line in logger.log:
@@ -78,13 +80,13 @@ class FileHandler():
         """
         
         if os.path.isfile(new_name):
-            print("Cannot overwrite pre-existing file")
+            self.log("Cannot overwrite pre-existing file")
         else:
             try:
                 os.rename(old_name,new_name)
                 return True
             except OSError as e:
-                print(f"Cannot rename {old_name} to {new_name}: {e}")
+                self.log(f"Cannot rename {old_name} to {new_name}: {e}")
         return False
 
     def write_json_receipt_to_file(self,filename,json_receipt):
@@ -109,7 +111,7 @@ class FileHandler():
             with open(os.path.join(self.processed_directory,new_name),"w") as file:
                 file.write(json.dumps(json_receipt,indent = 4))
         except OSError:
-            print(f"Unable to write to file {file_loc}")
+            self.log(f"Unable to write to file {file_loc}")
             raise OSError
             
 
@@ -163,7 +165,7 @@ class FileHandler():
                 text = file.read()
                 return text
         else:
-            print("File does not exist")
+            self.log("File does not exist")
             text = ""
             return text
 
@@ -175,6 +177,13 @@ class FileHandler():
         self.accepted_directory = config.acceptedReceiptsDirectory
         self.excluded_directory = config.excludedReceiptsDirectory
         self.log_directory = config.logDirectory
+        
+    def log(self, message: str) -> bool:
+        if self.logger:
+            self.logger.log_message(message)
+            return True
+        else:
+            return False
 
 if __name__ == '__main__':
     fh = FileHandler()

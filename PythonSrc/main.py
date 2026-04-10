@@ -10,7 +10,8 @@ def main():
 
     # Create instances of necessary classes
     file_handler = fh.FileHandler()
-    logger = l.Logger(file_handler)
+    logger = l.Logger(file_handler,debug=True)
+    file_handler.logger = logger
     logger.log_message("File handler and logger created")
     reader = rr.ReceiptReader(logger)
     logger.log_message("Retrieving receipts")

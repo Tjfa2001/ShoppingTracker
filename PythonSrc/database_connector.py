@@ -15,7 +15,7 @@ class DatabaseConnector():
         self.connection = pyodbc.connect(config.databaseConnectionString)
         if logger:
             self.logger = logger
-        self.logger.log_message("Database connection established")
+        self.log("Database connection established")
         self.compile_regex()
 
     def __enter__(self):
@@ -24,6 +24,20 @@ class DatabaseConnector():
         self.connection.setdecoding(pyodbc.SQL_CHAR,encoding='utf-8')
         self.connection.setdecoding(pyodbc.SQL_WCHAR,encoding='utf-8')
         return self
+
+    def log(self,message: str):
+        if self.logger:
+            self.logger.log_message(message)
+            return True
+        else:
+            return False
+        
+    def log_error(self,error_msg):
+        if self.logger:
+            self.logger.log_error(error_msg)
+            return True
+        else:
+            return False
 
     def send_to_database(self,receipt_name,validated_receipt):
         # Send validated receipt data to the database
@@ -43,18 +57,15 @@ class DatabaseConnector():
         for item in items:
             name, price, quantity, cost = self.extract_item_info(item)
             self.send_to_item_table(receipt_name,name,price,quantity,cost)
+            self.log(f"Processing item: {name}")
             
-            print(f"Processing item: {name}")
             with open(config.categoriesDictFile,"r") as category_dict:
                 category_dict = json.loads(category_dict.read())
-                #print(category_dict)
                 if name in category_dict:
                     category = category_dict[f"{name}"]
-                    self.logger.log_message(f"Found category {category} for item: {name}")
-                    #print(f"Found category {category} for item: {name}")
+                    self.log(f"Found category {category} for item: {name}")
                 else:
-                    self.logger.log_message(f"No category found for item: {name}")
-                    #print(f"No category found for item: {name}")
+                    self.log(f"No category found for item: {name}")
                     category = ""
                 
             self.update_category(item_name=name,category=category)
@@ -95,25 +106,24 @@ class DatabaseConnector():
         return iso_date
     
     def send_to_item_table(self,receipt,item,price,quantity,cost):
-        self.logger.log_message(f"Sending item {item} to database")
+        self.log(f"Sending item {item} to database")
         cur = self.connection.cursor()
         try:
             cur.execute('CALL lidl.insert_item(?,?,?,?,?);',(receipt,item,price,quantity,cost))
         except pyodbc.DatabaseError as err:
             cur.rollback()
-            print(err.args[1])
-            print(err)
+            self.log_error(err.args[1])
         finally:
             cur.commit()
 
     def send_to_receipt_table(self,receipt,total,discount,date,time):
-        self.logger.log_message(f"Sending receipt {receipt} to database")
+        self.log(f"Sending receipt {receipt} to database")
         cur = self.connection.cursor()
         try:
             cur.execute('CALL lidl.insert_receipt(?,?,?,?,?);',(receipt,total,discount,date,time))
         except pyodbc.DatabaseError as err:
             cur.rollback()
-            print(err.args[1])
+            self.log_error(err.args[1])
         finally:
             cur.commit()
             
@@ -126,7 +136,7 @@ class DatabaseConnector():
             cur.execute('CALL lidl.update_category(?,?);',(item_name,category))
         except pyodbc.DatabaseError as err:
             cur.rollback()
-            print(err.args[1])
+            self.log_error(err.args[1])
         finally:
             cur.commit()
         
