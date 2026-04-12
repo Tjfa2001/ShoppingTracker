@@ -19,6 +19,7 @@ receiptsDirectory = os.path.join(projectDirectory,"Receipts")
 
 # Logger Variable
 logDirectory = os.path.join(projectDirectory,"Logs")
+logArchiveDirectory = os.path.join(logDirectory,"Archive")
 
 # Database Variables
 databaseConnectionString = """Driver={PostgreSQL UNICODE};

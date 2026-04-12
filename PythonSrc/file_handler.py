@@ -55,7 +55,7 @@ class FileHandler():
             nothing
         """
         
-        timestamp = datetime.now().strftime("%d%m%Y_%H%M%S")
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         log_name = f"log_{timestamp}"
         
         try:
