@@ -24,11 +24,12 @@ for file in os.listdir(logDirectory):
         new_loc = os.path.join(archiveDirectory,file)
         try:
             os.replace(src=current_loc,dst=new_loc)
+            print(f"Archived: ${current_loc}")
             archived_count += 1
         except OSError:
             print(f"Could not replace {current_loc} with {new_loc}")
         
     else:
-        print(f"Newish file: {file}")
+        print(f"Not archived: {file}")
         
 print(f"Finished housekeeping! {archived_count} files archived...")

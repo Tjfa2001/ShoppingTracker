@@ -32,6 +32,13 @@ class Logger:
         self.log.append(timed_error)
         if self.debug:
             print(timed_error)
+            
+    # Log another log in list format
+    def log_list_log(self,list_log):
+        if type(list_log) is list:
+            [self.log_message(x) for x in list_log]
+        else:
+            self.log_error(f"Tried to log {list_log} but {list_log} is not a list")
     
     # Write the log messages to a file using the FileHandler
     def write_to_file(self):

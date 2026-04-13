@@ -3,20 +3,37 @@ import my_logger as l
 import file_handler as fh
 import validator as val
 import database_connector as dc
+import subprocess
+import config as cf
+import os
 from datetime import date
 
 # Main function to run the shopping tracker application
 def main():
 
-    # Create instances of necessary classes
+    # Create file handling class and logging class
     file_handler = fh.FileHandler()
     logger = l.Logger(file_handler,debug=True)
     file_handler.logger = logger
     logger.log_message("File handler and logger created")
+    
+    # Running housekeeping on log directory to remove files older than 30 days
+    housekeep = os.path.join(cf.pythonSource,'housekeep.py')
+    completed_subprocess = subprocess.run(['python',housekeep],capture_output=True)
+    housekeep_log = completed_subprocess.stdout.decode().splitlines()  
+    logger.log_list_log(housekeep_log)
+    
+    # Creating receipt reader object
     reader = rr.ReceiptReader(logger)
     logger.log_message("Retrieving receipts")
+    
+    # Retrieving receipts from Receipts directory
     valid_receipts, excluded = reader.get_receipts()
+    
+    # Creates validator to validate receipts
     validator = val.Validator(logger)
+    
+    # Creates a database connector
     db_connect = dc.DatabaseConnector(logger)
     
     if not valid_receipts:
