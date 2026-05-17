@@ -3,6 +3,7 @@ import pandas as pd
 import calendar
 import matplotlib.pyplot as plt
 from tkinter import ttk
+from tkinter import *
 import openpyxl
 import config as cf
 from matplotlib.figure import Figure
@@ -25,31 +26,100 @@ class DataDisplayer():
         self.sql = sql
         self.conn = connector
         self.root = tk.Tk()
-        self.mode = "Month Grouping"
+        self.root.rowconfigure(0,weight=1)
+        self.root.columnconfigure(0,weight=1)
+        self.root.minsize(width=500,height=500)
+        self.root.maxsize(width=1500,height=1250)
+        self.mode = StringVar()
         
-        frame = tk.Frame(master = self.root,bg='skyblue',width=500,height=300)
-        frame.pack(padx=100, pady=100,fill='x',side=tk.LEFT)
+        self.loadSettings()
         
+        content = ttk.Frame(master=self.root)
+        content.grid(column=0,row=0,sticky="nsew")
+        content.columnconfigure(0,weight=1)
+        content.rowconfigure(0,weight=1)
+        content.columnconfigure(1,weight=1)
+        content.grid_propagate(False)
+        
+        # Panel / frame for holding options chosen by user
+        style = ttk.Style()
+        style.configure("Option.TFrame",background="lightskyblue")
+        
+        option_panel = ttk.Frame(master=content,relief="ridge",borderwidth=50,style="Option.TFrame")
+        option_panel.grid(column=0,row=0,ipadx=10,ipady=10,sticky="nsew")
+        option_panel.propagate(False)
+        
+        # Label asking for mode
+        mode_option_label = ttk.Label(master=option_panel,text="How would you like to view your data?")
+        mode_option_label.grid(row=1,column=0)
+        
+        # Combobox for mode
+        combo_mode = ttk.Combobox(master=option_panel,textvariable=self.mode)
+        combo_mode.configure(values=("Monthly","Weekly","Yearly"),state="readonly")
+        combo_mode.grid(row=2,column=0)
+        combo_mode.bind('<Return>',self.printcombo)
+        
+        display_panel = ttk.Frame(master=content,relief="sunken",borderwidth=15)
+        display_panel.grid(column=1,row=0,sticky="nsew")
+        
+        """
+        content2 = tk.Frame(master=self.root,padx=10,pady=10,bg="green",relief='raised')
+        content2.place(relx=0,rely=0,relwidth=0.3,relheight=1.0)
+        content2.grid_propagate(False)
+        
+        button = tk.Button(master=content2,text="Hello",command=self.example_function)
+        button.grid()
+        
+        button.bind('<Enter>',lambda e: button.configure(text="Entered"))
+        button.bind('<Leave>',lambda e: button.configure(text="Left"))
+        
+        options_label = tk.Label(master=content2,text="Options Panel")
+        
+        frame_two = tk.Frame(master=self.root,background="red")
+        frame_two.grid(column=1,row=1,columnspan=2,rowspan=2)
+        #left_frame = tk.Frame(master = content,bg='skyblue',width=100,height=300)
+        
+        #frame.pack(padx=100, pady=100,fill='x',side=tk.LEFT)
+        """
+        
+        """
         frame2 = tk.Frame(master = self.root, bg='red',width=500, height=500)
-        frame2.pack(padx=50,pady=50,side=tk.RIGHT,fill='y')
+        #frame2.pack(padx=50,pady=50,side=tk.RIGHT,fill='y')
         
         left_button = tk.Button(master=frame2,text="<",width=50,height=50)
         right_button = tk.Button(master=frame2,text=">",width=50,height=50)
         
-        left_button.pack()
-        right_button.pack()
+        #left_button.pack()
+        #right_button.pack()
         # Loads settings from the config file
         self.loadSettings()
         
         time_combo = ttk.Combobox(master=self.root,values=["Year","Month","Day"])
-        time_combo.pack()
-        load = tk.Button(self.root,command=self.loadData,text='Load Data',width=50)
-        load.pack()
+        #time_combo.pack()
+        
+        load_button = tk.Button(self.root,command=self.loadData,text='Load Data',width=50)
+        #load_button.pack()
+        
         display = tk.Button(self.root,command=self.displayDataForMonth,text='Display Data',width=50)
-        display.pack()
+        #display.pack()
+        
+        frame.grid(column=0,row=0)
+        """
+
+        #left_frame.grid(column=0,row=3)
+        #options_label.grid(column=1,row=1)
+        
         self.root.mainloop()
     
+    def printcombo(self,event):
+        print(self.mode.get())
+        print(event)
+
+    def example_function(self):
+        print("HELLO")
+    
     def loadSettings(self):
+        self.root.title("Receipt Data Displayer")
         self.root.geometry(cf.geometry)
         self.root.title = cf.dataDisplayerTitle
     
@@ -124,3 +194,4 @@ class DataDisplayer():
     
 if __name__ == '__main__':
     print("This module is not intended to be run directly")
+    dd = DataDisplayer(connector="abc", sql="abc")
