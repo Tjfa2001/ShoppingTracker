@@ -6,6 +6,9 @@ from tkinter import ttk
 from tkinter import *
 import openpyxl
 import config as cf
+import PIL
+from PIL import Image, ImageTk
+import os
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, 
 NavigationToolbar2Tk)
@@ -20,7 +23,11 @@ class DataDisplayer():
     canvas = None
     time_combo = None
     first = True
-    mode = None
+    
+    # Tkinter Components
+    combo_mode = None
+    option_panel = None
+    content = None
     
     def __init__(self,connector,sql):
         self.sql = sql
@@ -29,38 +36,59 @@ class DataDisplayer():
         self.root.rowconfigure(0,weight=1)
         self.root.columnconfigure(0,weight=1)
         self.root.minsize(width=500,height=500)
-        self.root.maxsize(width=1500,height=1250)
+        self.root.maxsize(width=2000,height=1250)
         self.mode = StringVar()
         
         self.loadSettings()
         
-        content = ttk.Frame(master=self.root)
-        content.grid(column=0,row=0,sticky="nsew")
-        content.columnconfigure(0,weight=1)
-        content.rowconfigure(0,weight=1)
-        content.columnconfigure(1,weight=1)
-        content.grid_propagate(False)
+        # Content Frame is just a frame for the option panel and display panel to sit in
+        self.make_content()
+        self.content.grid(column=0,row=0,sticky="nsew")
+        
+        # Debug Style
+        debug = ttk.Style()
+        debug.configure(".",borderwidth=10, relief="solid", bordercolor="red")
         
         # Panel / frame for holding options chosen by user
         style = ttk.Style()
-        style.configure("Option.TFrame",background="lightskyblue")
+        style.configure("Option.TFrame",background="green")
         
-        option_panel = ttk.Frame(master=content,relief="ridge",borderwidth=50,style="Option.TFrame")
-        option_panel.grid(column=0,row=0,ipadx=10,ipady=10,sticky="nsew")
-        option_panel.propagate(False)
+        # Option Panel
+        self.make_option_panel()
+        self.option_panel.grid(column=0,row=0,ipadx=100,ipady=100,sticky="nsew")
+        
+        # Label with logo on it
+        this_dir = os.path.dirname(os.path.abspath(__file__))
+        logo_img_loc = os.path.join(this_dir,"Assets","LinkedInFinal2025.png")
+        
+        pil_img = Image.open(logo_img_loc)
+        resized_pil = pil_img.resize((100,100),Image.Resampling.LANCZOS)
+        
+        image = ImageTk.PhotoImage(resized_pil)
+
+        logo_label = ttk.Label(master=self.option_panel,
+                               anchor="w",
+                               image=image)
+        logo_label.grid(row=0,column=0,sticky="nw")
         
         # Label asking for mode
-        mode_option_label = ttk.Label(master=option_panel,text="How would you like to view your data?")
-        mode_option_label.grid(row=1,column=0)
+        mode_option_label = ttk.Label(master=self.option_panel,
+                                      text="How would you like to view your data?",
+                                      anchor="center",wraplength=100)
+        mode_option_label.grid(row=1,column=0,sticky="nsew")
+        
+        # Retrieve Button
+        retrieve_button = ttk.Button(master=self.root,text="<>",command=self.retrieve,width=3)
+        #retrieve_button.grid(row=5,column=1)
+        retrieve_button.place(relx=0.3333, rely=0.5, anchor="center")
         
         # Combobox for mode
-        combo_mode = ttk.Combobox(master=option_panel,textvariable=self.mode)
-        combo_mode.configure(values=("Monthly","Weekly","Yearly"),state="readonly")
-        combo_mode.grid(row=2,column=0)
-        combo_mode.bind('<Return>',self.printcombo)
+        self.make_combo()
+        self.combo_mode.grid(row=2,column=0,padx=10,pady=10)
         
-        display_panel = ttk.Frame(master=content,relief="sunken",borderwidth=15)
-        display_panel.grid(column=1,row=0,sticky="nsew")
+        self.make_display_panel()
+        self.display_panel.grid(column=1,row=0,columnspan=2,sticky="nsew")
+        
         
         """
         content2 = tk.Frame(master=self.root,padx=10,pady=10,bg="green",relief='raised')
@@ -110,6 +138,42 @@ class DataDisplayer():
         #options_label.grid(column=1,row=1)
         
         self.root.mainloop()
+    
+    def retrieve(self):
+        print("Retrieving data...")
+        
+    def make_content(self):
+        content = ttk.Frame(master=self.root)
+        content.columnconfigure(0,weight=1,uniform="cols")
+        content.columnconfigure(1,weight=1,uniform="cols")
+        content.columnconfigure(2,weight=1,uniform="cols")
+        content.rowconfigure(0,weight=1)
+        content.grid_propagate(False)
+        self.content = content
+    
+    def make_display_panel(self):
+        display_panel = ttk.Frame(master=self.content,relief="sunken",borderwidth=15)
+        self.display_panel = display_panel
+    
+    def make_option_panel(self):
+        option_panel = ttk.Frame(master=self.content,relief="ridge",borderwidth=50,style="Option.TFrame")
+        option_panel.propagate(False)
+        option_panel.columnconfigure(0,weight=1)
+        option_panel.rowconfigure(0,weight=1)
+        option_panel.rowconfigure(1,weight=1)
+        option_panel.rowconfigure(2,weight=1)
+        option_panel.rowconfigure(3,weight=1)
+        option_panel.rowconfigure(4,weight=1)
+        option_panel.rowconfigure(5,weight=1)
+        
+        self.option_panel = option_panel
+    
+    def make_combo(self):
+        combo_mode = ttk.Combobox(master=self.option_panel,textvariable=self.mode)
+        combo_mode.configure(values=("Weekly","Monthly","Yearly"),state="readonly")
+        combo_mode.set("Weekly")
+        combo_mode.bind('<Return>',self.printcombo)
+        self.combo_mode = combo_mode
     
     def printcombo(self,event):
         print(self.mode.get())
