@@ -9,6 +9,7 @@ import config as cf
 import PIL
 from PIL import Image, ImageTk
 import os
+import sqlalchemy as sqa
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, 
 NavigationToolbar2Tk)
@@ -23,11 +24,13 @@ class DataDisplayer():
     canvas = None
     time_combo = None
     first = True
+    options_visible = True
     
     # Tkinter Components
     combo_mode = None
     option_panel = None
     content = None
+    hide_option_button = None
     
     def __init__(self,connector,sql):
         self.sql = sql
@@ -78,16 +81,24 @@ class DataDisplayer():
         mode_option_label.grid(row=1,column=0,sticky="nsew")
         
         # Retrieve Button
-        retrieve_button = ttk.Button(master=self.root,text="<>",command=self.retrieve,width=3)
-        #retrieve_button.grid(row=5,column=1)
-        retrieve_button.place(relx=0.3333, rely=0.5, anchor="center")
+        hide_option_button = ttk.Button(master=self.root,text="<>",command=self.hide_option,width=3)
+        self.hide_option_button = hide_option_button
+        hide_option_button.place(relx=0.3333, rely=0.5, anchor="center")
         
         # Combobox for mode
         self.make_combo()
         self.combo_mode.grid(row=2,column=0,padx=10,pady=10)
         
+        # Button to retrieve data
+        self.retrieve_button = ttk.Button(master=self.option_panel,text="Go",command=self.loadData)
+        self.retrieve_button.grid(row=4,column=1)
+        
+        # Display panel
         self.make_display_panel()
         self.display_panel.grid(column=1,row=0,columnspan=2,sticky="nsew")
+        
+        label2 = ttk.Label(master=self.display_panel,text="Tom")
+        label2.grid(row=0,column=0,sticky="ew")
         
         
         """
@@ -138,6 +149,19 @@ class DataDisplayer():
         #options_label.grid(column=1,row=1)
         
         self.root.mainloop()
+    
+    def hide_option(self):
+        
+        if self.options_visible:
+            self.option_panel.grid_remove()
+            self.options_visible = False
+            self.hide_option_button.place(relx=0, rely=0.5, anchor="center")
+            self.content.columnconfigure(0,weight=0,uniform="")
+        else:
+            self.option_panel.grid(column=0,row=0,ipadx=100,ipady=100,sticky="nsew")
+            self.options_visible = True
+            self.hide_option_button.place(relx=0.3333, rely=0.5, anchor="center")
+            self.content.columnconfigure(0,weight=1,uniform="cols")
     
     def retrieve(self):
         print("Retrieving data...")
@@ -190,8 +214,9 @@ class DataDisplayer():
     def loadData(self):
         data = pd.read_sql(sql=self.sql,con=self.conn.connection)
         self.data = data
-        match self.mode:
-            case "Month Grouping":
+        match self.combo_mode.current():
+            # Monthly
+            case 1:
                 if self.first == True:
                     self.extractMonthData(9,2025)
                     self.first = False
@@ -230,7 +255,7 @@ class DataDisplayer():
 
         # creating the Tkinter canvas
         # containing the Matplotlib figure
-        canvas = FigureCanvasTkAgg(fig,master = self.root)  
+        canvas = FigureCanvasTkAgg(fig,master = self.display_panel)  
         canvas.draw()
         
         if self.canvas:
@@ -239,7 +264,8 @@ class DataDisplayer():
         self.canvas = canvas
         
         # placing the canvas on the Tkinter window
-        canvas.get_tk_widget().pack()
+        print("Trying to grid")
+        canvas.get_tk_widget().grid(row=1,column=1)
 
         # creating the Matplotlib toolbar
         #toolbar = NavigationToolbar2Tk(canvas,self.root)
@@ -258,4 +284,7 @@ class DataDisplayer():
     
 if __name__ == '__main__':
     print("This module is not intended to be run directly")
-    dd = DataDisplayer(connector="abc", sql="abc")
+    
+    engine = sqa.create_engine("postgresql://postgres:postgres@localhost/lidl_receipts")
+    connect = engine.connect()
+    dd = DataDisplayer(connector=connect, sql=cf.monthSQL)
