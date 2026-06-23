@@ -17,7 +17,7 @@ class MasterDict:
         self.mast_dict_json = json.loads(self.master)
     
     def get_directories(self):
-        self.dictionary_location = config.masterDictionaryLocation
+        self.dictionary_location = config.MAST_DICT_LOCATION
 
     def update(self,item_name,new_name):
         self.mast_dict_json.update({item_name:new_name})

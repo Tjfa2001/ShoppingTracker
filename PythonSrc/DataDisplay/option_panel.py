@@ -11,10 +11,13 @@ class OptionPanel(ttk.Frame):
     
     def __init__(self,parent):
         super().__init__(parent,padding=10)
+        self._build()
+    
+    def _build(self):
         self.setup_layout()
         self.make_icon()
         self.make_mode_label()
-        
+    
     def setup_layout(self):
         
         # Options panel style

@@ -11,6 +11,7 @@ Logs/
 Excluded/
 Backups/
 Accepted/
+dataframe*
 
 # User-specific files
 *.rsuser

@@ -1,28 +1,28 @@
 import os
 
-pythonSource = os.path.dirname(__file__)
-projectDirectory = os.path.dirname(pythonSource)
-dictionaryLocation = os.path.join(pythonSource,"CategoryDict.json")
+PYTHON_SOURCE = os.path.dirname(__file__)
+PROJECT_DIRECTORY = os.path.dirname(PYTHON_SOURCE)
+DICT_LOCATION = os.path.join(PYTHON_SOURCE,"CategoryDict.json")
 
 # Master Dictionary Locations
-masterDictionaryLocation = os.path.join(projectDirectory,"MasterDictionary\MastDict.json")
+MAST_DICT_LOCATION = os.path.join(PROJECT_DIRECTORY,"MasterDictionary\MastDict.json")
 
 # Categories Locations
-categoriesDictFile = os.path.join(pythonSource,"Categories\CategoryDict.json")
-categoryFilePath = os.path.join(pythonSource,"categories.txt")
+CATEGORY_DICT_FILE = os.path.join(PYTHON_SOURCE,"Categories\CategoryDict.json")
+CATEGORY_FILE_PATH = os.path.join(PYTHON_SOURCE,"categories.txt")
 
 # Receipt Directories
-acceptedReceiptsDirectory = os.path.join(projectDirectory,"Accepted")
-excludedReceiptsDirectory = os.path.join(projectDirectory,"Excluded")
-processedReceiptsDirectory = os.path.join(projectDirectory,"ProcessedReceipts")
-receiptsDirectory = os.path.join(projectDirectory,"Receipts")
+ACCEPTED_RECEIPTS_DIR = os.path.join(PROJECT_DIRECTORY,"Accepted")
+EXCLUDED_RECEIPTS_DIR = os.path.join(PROJECT_DIRECTORY,"Excluded")
+PROCESSED_RECEIPTS_DIR = os.path.join(PROJECT_DIRECTORY,"ProcessedReceipts")
+RECEIPTS_DIRECTORY = os.path.join(PROJECT_DIRECTORY,"Receipts")
 
 # Logger Variable
-logDirectory = os.path.join(projectDirectory,"Logs")
-logArchiveDirectory = os.path.join(logDirectory,"Archive")
+LOG_DIRECTORY = os.path.join(PROJECT_DIRECTORY,"Logs")
+LOG_ARCHIVE_DIR = os.path.join(LOG_DIRECTORY,"Archive")
 
 # Database Variables
-databaseConnectionString = """Driver={PostgreSQL UNICODE};
+DB_CONNECTION_STR = """Driver={PostgreSQL UNICODE};
                               Server=localhost;
                               Port=5432;
                               Database=lidl_receipts;
@@ -30,8 +30,9 @@ databaseConnectionString = """Driver={PostgreSQL UNICODE};
                               Pwd=postgres;"""
                               
 # Data Displayer Settings
-geometry = '2000x1000'
-dataDisplayerTitle = 'Toms Data Displayer'
+DATA_DISPLAY_MAX_DIM = '2000x1250'
+DATA_DISPLAY_MIN_DIM = '500x500'
+DATA_DISPLAY_TITLE = 'Toms Data Displayer'
 
 monthSQL = """
     SELECT

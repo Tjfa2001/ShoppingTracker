@@ -15,10 +15,10 @@ class ReceiptReader:
     logger = None
     file_handler = None
     first_name_check = True
-    abspath = os.path.join(config.projectDirectory)
-    receipt_dir = config.receiptsDirectory
-    excluded_dir = config.excludedReceiptsDirectory
-    accepted_dir = config.acceptedReceiptsDirectory
+    abspath = os.path.join(config.PROJECT_DIRECTORY)
+    receipt_dir = config.RECEIPTS_DIRECTORY
+    excluded_dir = config.EXCLUDED_RECEIPTS_DIR
+    accepted_dir = config.ACCEPTED_RECEIPTS_DIR
     next_receipt_number = 0
 
     def __init__(self,logger):

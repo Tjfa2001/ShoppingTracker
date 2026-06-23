@@ -172,11 +172,11 @@ class FileHandler():
     def get_directories(self):
         """Retrieve the directories that the file handler accesses."""
         
-        self.processed_directory = config.processedReceiptsDirectory 
-        self.receipt_directory = config.receiptsDirectory
-        self.accepted_directory = config.acceptedReceiptsDirectory
-        self.excluded_directory = config.excludedReceiptsDirectory
-        self.log_directory = config.logDirectory
+        self.processed_directory = config.PROCESSED_RECEIPTS_DIR 
+        self.receipt_directory = config.RECEIPTS_DIRECTORY
+        self.accepted_directory = config.ACCEPTED_RECEIPTS_DIR
+        self.excluded_directory = config.EXCLUDED_RECEIPTS_DIR
+        self.log_directory = config.LOG_DIRECTORY
         
     def log(self, message: str) -> bool:
         if self.logger:

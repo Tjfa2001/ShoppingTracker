@@ -12,7 +12,7 @@ class DatabaseConnector():
 
     def __init__(self,logger):
         # Connect to your postgres DB
-        self.connection = pyodbc.connect(config.databaseConnectionString)
+        self.connection = pyodbc.connect(config.DB_CONNECTION_STR)
         if logger:
             self.logger = logger
         self.log("Database connection established")
@@ -24,6 +24,14 @@ class DatabaseConnector():
         self.connection.setdecoding(pyodbc.SQL_CHAR,encoding='utf-8')
         self.connection.setdecoding(pyodbc.SQL_WCHAR,encoding='utf-8')
         return self
+
+    def execute(self,query):
+        cur = self.connection.cursor()
+        try:
+            cur.execute(query)
+        except pyodbc.DatabaseError as err:
+            print("ERROR ERROR ERROR")
+            
 
     def log(self,message: str):
         if self.logger:
@@ -59,7 +67,7 @@ class DatabaseConnector():
             self.send_to_item_table(receipt_name,name,price,quantity,cost)
             self.log(f"Processing item: {name}")
             
-            with open(config.categoriesDictFile,"r") as category_dict:
+            with open(config.CATEGORY_DICT_FILE,"r") as category_dict:
                 category_dict = json.loads(category_dict.read())
                 if name in category_dict:
                     category = category_dict[f"{name}"]

@@ -2,6 +2,7 @@ import tkinter as tk
 import pandas as pd
 import calendar
 import matplotlib.pyplot as plt
+import data_extractor as de
 from tkinter import ttk
 from tkinter import *
 import openpyxl
@@ -34,21 +35,23 @@ class DataDisplayer():
     hide_option_button = None
     image = None
     retrieve_button = None
+
     
-    def __init__(self,connector,sql):
+    def __init__(self, data_extractor):
         
-        # SQL Query to be run
-        self.sql = sql
-        
-        # Connection to the database
-        self.conn = connector
+        # Data Extractor class
+        self.data_extractor = data_extractor
         
         # Main frame for holding other frames
         self.root = tk.Tk()
         self.root.rowconfigure(0,weight=1)
         self.root.columnconfigure(0,weight=1)
-        self.root.minsize(width=500,height=500)
-        self.root.maxsize(width=2000,height=1250)
+        
+        min_dim = cf.DATA_DISPLAY_MIN_DIM
+        max_dim = cf.DATA_DISPLAY_MAX_DIM
+        
+        self.root.minsize(width=min[0],height=min[1])
+        self.root.maxsize(width=max[0],height=max[1])
         
         self.mode = StringVar()
         
@@ -121,8 +124,8 @@ class DataDisplayer():
     
     def loadSettings(self):
         self.root.title("Receipt Data Displayer")
-        self.root.geometry(cf.geometry)
-        self.root.title = cf.dataDisplayerTitle
+        self.root.geometry(cf.DATA_DISPLAY_DIM)
+        self.root.title = cf.DATA_DISPLAY_TITLE
     
     def load_data(self):
         data = pd.read_sql(sql=self.sql,con=self.conn.connection)
@@ -197,8 +200,9 @@ class DataDisplayer():
     
 if __name__ == '__main__':
     import DataDisplay as dd
-    print("This module is not intended to be run directly")
     
     engine = sqa.create_engine("postgresql://postgres:postgres@localhost/lidl_receipts")
     connect = engine.connect()
-    dd = DataDisplayer(connector=connect, sql=cf.monthSQL)
+    
+    data_extractor = de.DataExtractor(connector=connect)
+    dd = DataDisplayer(data_extractor=data_extractor, sql=cf.monthSQL)

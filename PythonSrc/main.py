@@ -18,7 +18,7 @@ def main():
     logger.log_message("File handler and logger created")
     
     # Running housekeeping on log directory to remove files older than 30 days
-    housekeep = os.path.join(cf.pythonSource,'housekeep.py')
+    housekeep = os.path.join(cf.PYTHON_SOURCE,'housekeep.py')
     completed_subprocess = subprocess.run(['python',housekeep],capture_output=True)
     housekeep_log = completed_subprocess.stdout.decode().splitlines()  
     logger.log_list_log(housekeep_log)
