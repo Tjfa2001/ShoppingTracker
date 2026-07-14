@@ -19,16 +19,16 @@ def run():
                 assigner = ca.CategoryAssigner()
                 assigner.assign_category_to_item()
             case '3':
-                assigner = ca.CategoryAssigner() 
+                assigner = ca.CategoryAssigner()
                 assigner.remove_category()
             case '4':
                 assigner = ca.CategoryAssigner()
-                assigner.view_categories()  
+                assigner.view_categories()
             case '5':
-                 # Might be useful to put the database connector class in the same directory level 
+                 # Might be useful to put the database connector class in the same directory level
                  DictionaryLocation = os.path.abspath(os.path.join(os.path.dirname(__file__),"CategoryDict.json"))
                  with open(DictionaryLocation,'r') as CategoryDict:
-                    dictionary = json.load(CategoryDict) 
+                    dictionary = json.load(CategoryDict)
                     for item in dictionary:
                         print("Updating Database...")
                         print(f"{item} -> {dictionary[item]}")
@@ -56,13 +56,13 @@ def select_option():
 
 # Updates the database with a category for a given item
 def update_database(item_name,category):
-    
+
     connection = pdbc.connect(config.databaseConnectionString)
     connection.setencoding(encoding='utf-8')
     connection.setdecoding(pdbc.SQL_CHAR,encoding='utf-8')
     connection.setdecoding(pdbc.SQL_WCHAR,encoding='utf-8')
     cur = connection.cursor()
-    
+
     try:
         cur.execute('CALL lidl.update_category(?,?);',(item_name,category))
     except pdbc.DatabaseError as err:

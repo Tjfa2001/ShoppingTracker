@@ -31,7 +31,7 @@ class DatabaseConnector():
             return True
         else:
             return False
-        
+
     def log_error(self,error_msg):
         if self.logger:
             self.logger.log_error(error_msg)
@@ -43,7 +43,7 @@ class DatabaseConnector():
         # Send validated receipt data to the database
         items=validated_receipt['items']
         total=validated_receipt['total']
-        
+
         if 'discount' not in validated_receipt:
             discount = 0
         else:
@@ -58,7 +58,7 @@ class DatabaseConnector():
             name, price, quantity, cost = self.extract_item_info(item)
             self.send_to_item_table(receipt_name,name,price,quantity,cost)
             self.log(f"Processing item: {name}")
-            
+
             with open(config.categoriesDictFile,"r") as category_dict:
                 category_dict = json.loads(category_dict.read())
                 if name in category_dict:
@@ -67,7 +67,7 @@ class DatabaseConnector():
                 else:
                     self.log(f"No category found for item: {name}")
                     category = ""
-                
+
             self.update_category(item_name=name,category=category)
 
         self.send_to_receipt_table(receipt_name,total,discount,correct_date,time)
@@ -81,16 +81,16 @@ class DatabaseConnector():
             price = item['ppkg']
         else:
             price = item['price']
-        
+
         # If there is a quantity, extract this, otherwise set to 1
         if "quantity" in item:
             quantity = item['quantity']
         else:
             quantity = 1
-        
+
         # Multiply the quantity by the price to get the total cost for that item
         cost = int(quantity) * float(price)
-        
+
         return name, price, quantity, cost
 
     def format_date_for_db(self,match):
@@ -102,9 +102,9 @@ class DatabaseConnector():
             iso_date = f"{year}-{month}-{day}"
         else:
             iso_date = "2001-09-17"
-            
+
         return iso_date
-    
+
     def send_to_item_table(self,receipt,item,price,quantity,cost):
         self.log(f"Sending item {item} to database")
         cur = self.connection.cursor()
@@ -126,7 +126,7 @@ class DatabaseConnector():
             self.log_error(err.args[1])
         finally:
             cur.commit()
-            
+
     def compile_regex(self):
         self.date_pattern = re.compile(r'(\d+)/(\d+)/(\d+)')
 
@@ -139,8 +139,8 @@ class DatabaseConnector():
             self.log_error(err.args[1])
         finally:
             cur.commit()
-        
-    def __exit__(self,exception_type,exception_value,exception_traceback): 
+
+    def __exit__(self,exception_type,exception_value,exception_traceback):
         # Close the database connection
         self.connection.close()
 
@@ -155,4 +155,4 @@ if __name__ == '__main__':
             day = match.group(1)
             iso_date = f"{year}-{month}-{day}"
 
-        d = date.fromisoformat(iso_date)    
+        d = date.fromisoformat(iso_date)

@@ -15,10 +15,10 @@ if __name__ == '__main__':
     file_h = fh.FileHandler()
     logger_t = logger.Logger(file_h)
     connector = dbc.DatabaseConnector(logger_t)
-    
+
     engine = sqa.create_engine("postgresql://postgres:postgres@localhost/lidl_receipts")
     connect = engine.connect()
-    
+
     sql_statement1 = """
     SELECT
     i.*,
@@ -27,10 +27,10 @@ if __name__ == '__main__':
     lidl.items i
     INNER JOIN
     lidl.receipts r
-    ON 
+    ON
     i.receipt = r.receipt;
     """
-    
+
     # You can uncomment this to get the GUI to pop up
     data_disp = dd.DataDisplayer(connect,sql=cf.monthSQL)
     """
@@ -38,13 +38,13 @@ if __name__ == '__main__':
     df['date'] = pd.to_datetime(df['date'])
     df['month'] = df['date'].dt.strftime('%b')
     df['year'] = df['date'].dt.strftime('%Y')
-    
+
     df = df[['month','year','cost']]
     df = df.groupby(by=['month','year']).sum()
-    
+
     df.to_csv('dataframe_by_months.csv')
     """
-    
+
     #
     # Me playing around to display spend by month in matplotlib
     #
@@ -58,10 +58,10 @@ if __name__ == '__main__':
     plt.ylabel('Cost (£)')
     plt.xlabel('Month')
     plt.show()
-    
+
     print("PLOTTED")
     """
-    
+
     """
     dataframe = pd.read_sql("SELECT * FROM lidl.items;",con=connector.connection)
     printing = dataframe.sort_values("item", ascending=True)

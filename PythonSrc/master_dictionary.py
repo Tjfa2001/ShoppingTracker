@@ -15,7 +15,7 @@ class MasterDict:
 
     def load_file_to_json(self):
         self.mast_dict_json = json.loads(self.master)
-    
+
     def get_directories(self):
         self.dictionary_location = config.masterDictionaryLocation
 
@@ -27,7 +27,7 @@ class MasterDict:
 
     """
     From before I refactored writing of the master dictionary from the master dictionary class and not the validator
-    
+
     def write_to_file(self,new_master):
         self.master = new_master
         with open(self.dictionary_location,"w") as file:
@@ -56,5 +56,5 @@ class MasterDict:
             except Exception:
                 # If we can't write the file for some reason, keep master as an empty JSON string
                 pass
-    
+
 m = MasterDict()

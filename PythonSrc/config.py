@@ -28,7 +28,7 @@ databaseConnectionString = """Driver={PostgreSQL UNICODE};
                               Database=lidl_receipts;
                               Uid=postgres;
                               Pwd=postgres;"""
-                              
+
 # Data Displayer Settings
 geometry = '2000x1000'
 dataDisplayerTitle = 'Toms Data Displayer'

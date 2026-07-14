@@ -24,7 +24,7 @@ class Logger:
         self.log.append(timed_message)
         if self.debug:
             print(timed_message)
-            
+
     # Log an error with a timestamp
     def log_error(self,error_message):
         current_time = self.get_time()
@@ -32,14 +32,14 @@ class Logger:
         self.log.append(timed_error)
         if self.debug:
             print(timed_error)
-            
+
     # Log another log in list format
     def log_list_log(self,list_log):
         if type(list_log) is list:
             [self.log_message(x) for x in list_log]
         else:
             self.log_error(f"Tried to log {list_log} but {list_log} is not a list")
-    
+
     # Write the log messages to a file using the FileHandler
     def write_to_file(self):
         self.file_handler.write_logger_to_file(self)

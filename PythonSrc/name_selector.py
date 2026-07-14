@@ -17,7 +17,7 @@ class NameSelector():
         new_item = e.widget.get()
         self.new_name = new_item
         self.root.destroy()
-        
+
     def item_confirm(self,item):
         self.root = Tk()
         self.root.geometry("750x150")
