@@ -6,13 +6,13 @@ import json
 #import PythonSrc.file_handler as fh
 
 class CategoryAssigner():
-    
+
     item_name = ""
     category = ""
     categories = []
     dict_loc = None
     dict = {}
-    
+
     # Default constructor
     def __init__(self):
         self.item_name = None
