@@ -11,6 +11,10 @@ import config
 
 class ReceiptReader:
 
+    """
+    Receipt Reader
+    """
+
     receipts = []
     logger = None
     file_handler = None

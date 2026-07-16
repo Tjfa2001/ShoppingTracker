@@ -1,7 +1,7 @@
-import pyodbc
 import re
-import config
 import json
+import config
+import pyodbc
 from datetime import date, time, datetime
 
 class DatabaseConnector():

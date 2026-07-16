@@ -3,5 +3,9 @@
         "."
     ],
     "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
+    "python.testing.pytestEnabled": true,
+    "pylint.args": [
+        "--init-hook=import sys; sys.path.append('${workspaceFolder}')"
+    ],
+    "pylint.importStrategy": "fromEnvironment"
 }
