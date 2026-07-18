@@ -1,39 +1,41 @@
+"""Configuration variables for the project"""
+
 import os
 
-pythonSource = os.path.dirname(__file__)
-projectDirectory = os.path.dirname(pythonSource)
-dictionaryLocation = os.path.join(pythonSource,"CategoryDict.json")
+PYTHON_SRC = os.path.dirname(__file__)
+PROJ_DIR = os.path.dirname(PYTHON_SRC)
+DICT_LOC = os.path.join(PYTHON_SRC,"CategoryDict.json")
 
 # Master Dictionary Locations
-masterDictionaryLocation = os.path.join(projectDirectory,"MasterDictionary\MastDict.json")
+MAST_DICT_LOC = os.path.join(PROJ_DIR,r"MasterDictionary\MastDict.json")
 
 # Categories Locations
-categoriesDictFile = os.path.join(pythonSource,"Categories\CategoryDict.json")
-categoryFilePath = os.path.join(pythonSource,"categories.txt")
+CATEGORY_DICT_FILE = os.path.join(PYTHON_SRC,r"Categories\CategoryDict.json")
+CATEGORY_FILE_LOC = os.path.join(PYTHON_SRC,"categories.txt")
 
 # Receipt Directories
-acceptedReceiptsDirectory = os.path.join(projectDirectory,"Accepted")
-excludedReceiptsDirectory = os.path.join(projectDirectory,"Excluded")
-processedReceiptsDirectory = os.path.join(projectDirectory,"ProcessedReceipts")
-receiptsDirectory = os.path.join(projectDirectory,"Receipts")
+ACC_RECEIPT_DIR = os.path.join(PROJ_DIR,"Accepted")
+EXCL_RECEIPT_DIR = os.path.join(PROJ_DIR,"Excluded")
+PROC_RECEIPT_DIR = os.path.join(PROJ_DIR,"ProcessedReceipts")
+INPUT_RECEIPT_DIR = os.path.join(PROJ_DIR,"Receipts")
 
 # Logger Variable
-logDirectory = os.path.join(projectDirectory,"Logs")
-logArchiveDirectory = os.path.join(logDirectory,"Archive")
+LOG_DIR = os.path.join(PROJ_DIR,"Logs")
+LOG_ARCHIVE_DIR = os.path.join(LOG_DIR,"Archive")
 
 # Database Variables
-databaseConnectionString = """Driver={PostgreSQL UNICODE};
-                              Server=localhost;
-                              Port=5432;
-                              Database=lidl_receipts;
-                              Uid=postgres;
-                              Pwd=postgres;"""
+DB_CONN_STR = """Driver={PostgreSQL UNICODE};
+                 Server=localhost;
+                 Port=5432;
+                 Database=lidl_receipts;
+                 Uid=postgres;
+                 Pwd=postgres;"""
 
 # Data Displayer Settings
-geometry = '2000x1000'
-dataDisplayerTitle = 'Toms Data Displayer'
+DATA_DISPLAYER_GEOMETRY = '2000x1000'
+DATA_DISPLAYER_TITLE = 'Toms Data Displayer'
 
-monthSQL = """
+MONTHLY_DATA_SQL = """
     SELECT
     i.category,
     date_part('month',r.date) as month,

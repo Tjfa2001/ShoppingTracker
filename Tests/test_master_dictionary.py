@@ -13,7 +13,7 @@ def blank_master(tmp_path):
     master_dictionary = md.MasterDict()
     #os.makedirs(tmp_path)
     master_dictionary.dictionary_location = tmp_path
-    master_dictionary.read_from_file()
+    master_dictionary._read_from_file()
     master_dictionary.load_file_to_json()
     return master_dictionary
 

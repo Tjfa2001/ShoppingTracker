@@ -1,8 +1,10 @@
+"""A module to handle files used in the Receipt Reader application"""
+
 import os
 import json
 import re
-import config
 from datetime import datetime
+import config
 
 class FileHandler():
     """
@@ -63,7 +65,7 @@ class FileHandler():
         except OSError:
             self.log("File Handler unable to make directory")
 
-        with open(os.path.join(self.log_directory,log_name),'w') as file:
+        with open(os.path.join(self.log_directory,log_name),'w',encoding="utf-8") as file:
             for line in logger.log:
                 file.write(f"{line}\n")
 
@@ -108,11 +110,11 @@ class FileHandler():
         file_loc = os.path.join(self.processed_directory,new_name)
 
         try:
-            with open(os.path.join(self.processed_directory,new_name),"w") as file:
+            with open(os.path.join(self.processed_directory,new_name),"w",encoding="utf-8") as file:
                 file.write(json.dumps(json_receipt,indent = 4))
-        except OSError:
+        except OSError as err:
             self.log(f"Unable to write to file {file_loc}")
-            raise OSError
+            raise OSError from err
 
 
     def accept(self,filename):
@@ -161,29 +163,34 @@ class FileHandler():
         file_loc = os.path.join(self.processed_directory,filename)
 
         if os.path.isfile(file_loc):
-            with open(os.path.join(self.processed_directory,filename),"r") as file:
+            with open(
+                os.path.join(self.processed_directory,filename),"r",encoding="utf-8") as file:
                 text = file.read()
-                return text
         else:
             self.log("File does not exist")
             text = ""
-            return text
+
+        return text
 
     def get_directories(self):
         """Retrieve the directories that the file handler accesses."""
 
-        self.processed_directory = config.processedReceiptsDirectory
-        self.receipt_directory = config.receiptsDirectory
-        self.accepted_directory = config.acceptedReceiptsDirectory
-        self.excluded_directory = config.excludedReceiptsDirectory
-        self.log_directory = config.logDirectory
+        self.processed_directory = config.PROC_RECEIPT_DIR
+        self.receipt_directory = config.INPUT_RECEIPT_DIR
+        self.accepted_directory = config.ACC_RECEIPT_DIR
+        self.excluded_directory = config.EXCL_RECEIPT_DIR
+        self.log_directory = config.LOG_DIR
 
     def log(self, message: str) -> bool:
+        """Log via the Logger class"""
+
+        success = False
+
         if self.logger:
             self.logger.log_message(message)
-            return True
-        else:
-            return False
+            success = True
+
+        return success
 
 if __name__ == '__main__':
     fh = FileHandler()
