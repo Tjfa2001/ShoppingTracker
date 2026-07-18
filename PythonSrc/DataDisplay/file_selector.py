@@ -1,10 +1,6 @@
-from tkinter import *
-from tkinter import ttk
-from tkinter import filedialog as fd
-import os
+"""Simple module to select a file to process"""
 
-#root = Tk()
-#root.title("Select a file")
+from tkinter import filedialog as fd
 
 filename = fd.askopenfiles()
 

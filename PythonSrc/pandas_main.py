@@ -32,7 +32,7 @@ if __name__ == '__main__':
     """
 
     # You can uncomment this to get the GUI to pop up
-    data_disp = dd.DataDisplayer(connect,sql=cf.monthSQL)
+    data_disp = dd.DataDisplayer(connect,sql=cf.MONTHLY_DATA_SQL)
     """
     df = pd.read_csv('dataframe_with_dates.csv')
     df['date'] = pd.to_datetime(df['date'])

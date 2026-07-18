@@ -3,8 +3,8 @@ import config as cf
 import time
 import datetime as dt
 
-logDirectory = cf.logDirectory
-archiveDirectory = cf.logArchiveDirectory
+logDirectory = cf.LOG_DIR
+archiveDirectory = cf.LOG_ARCHIVE_DIR
 cur_date = dt.date.today()
 archived_count = 0
 

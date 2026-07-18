@@ -1,9 +1,13 @@
+"""An option panel for Tkinter interface"""
+
 from tkinter import ttk
-from tkinter import *
-from PIL import Image, ImageTk
 import os
+from PIL import Image, ImageTk
+
 
 class OptionPanel(ttk.Frame):
+
+    """An option panel for the Tkinter interface for the project"""
 
     icon_image = None
     visible = True
@@ -17,6 +21,7 @@ class OptionPanel(ttk.Frame):
 
     def setup_layout(self):
 
+        """Sets up the layout of this panel"""
         # Options panel style
         option_style = ttk.Style()
         option_style.configure("Option.TFrame",background="darkblue")
@@ -31,7 +36,9 @@ class OptionPanel(ttk.Frame):
         self.rowconfigure(4,weight=1)
         self.rowconfigure(5,weight=1)
 
-    def make_icon(self):
+    def make_icon(self) -> None:
+
+        """Make the icon displayed on the options panel"""
 
         this_dir = os.path.dirname(os.path.abspath(__file__))
         logo_img_loc = os.path.join(this_dir,"../Assets","LinkedInFinal2025.png")
@@ -44,13 +51,21 @@ class OptionPanel(ttk.Frame):
                                image=self.icon_image)
         logo_label.grid(row=0,column=0,sticky="nw")
 
-    def make_mode_label(self):
+    def make_mode_label(self) -> None:
+
+        """Make the label for the combo box of the time modes"""
+
         mode_option_label = ttk.Label(master=self,
                                       text="How would you like to view your data?",
                                       anchor="center",wraplength=500)
         mode_option_label.grid(row=1,column=0,sticky="nsew")
 
-    def make_combo_mode_box(self,mode):
+    def make_combo_mode_box(self,mode) -> None:
+
+        """
+        Make the combo box for the mode to use
+        This can be weekly, monthly or yearly
+        """
 
         combo_mode = ttk.Combobox(master=self,textvariable=mode)
         combo_mode.configure(values=("Weekly","Monthly","Yearly"),state="readonly")
@@ -58,7 +73,9 @@ class OptionPanel(ttk.Frame):
 
         return combo_mode
 
-    def make_retrieve_button(self,command):
+    def make_retrieve_button(self,command) -> None:
+
+        """Make the button that retrieves the data"""
 
         retrieve_button = ttk.Button(master=self,text="Go",command=command)
         retrieve_button.grid(row=4,column=0,ipadx=20,ipady=50)

@@ -1,10 +1,12 @@
 import re
 import json
+from datetime import date
 import config
 import pyodbc
-from datetime import date, time, datetime
 
 class DatabaseConnector():
+
+    """Object to connect to a database for SQL transactions"""
 
     connection = None
     date_pattern = None
@@ -12,7 +14,7 @@ class DatabaseConnector():
 
     def __init__(self,logger):
         # Connect to your postgres DB
-        self.connection = pyodbc.connect(config.databaseConnectionString)
+        self.connection = pyodbc.connect(config.DB_CONN_STR)
         if logger:
             self.logger = logger
         self.log("Database connection established")
@@ -26,21 +28,21 @@ class DatabaseConnector():
         return self
 
     def log(self,message: str):
+        """Log a message via the Logger class"""
         if self.logger:
             self.logger.log_message(message)
             return True
-        else:
-            return False
+        return False
 
     def log_error(self,error_msg):
+        """Log an error message via the Logger class"""
         if self.logger:
             self.logger.log_error(error_msg)
             return True
-        else:
-            return False
+        return False
 
     def send_to_database(self,receipt_name,validated_receipt):
-        # Send validated receipt data to the database
+        """Send validated receipt data to the database"""
         items=validated_receipt['items']
         total=validated_receipt['total']
 
@@ -52,14 +54,12 @@ class DatabaseConnector():
         date_from_receipt=validated_receipt['date']
         correct_date = date.fromisoformat(self.format_date_for_db(self.date_pattern.search(date_from_receipt)))
 
-        time=validated_receipt['time']
-
         for item in items:
             name, price, quantity, cost = self.extract_item_info(item)
             self.send_to_item_table(receipt_name,name,price,quantity,cost)
             self.log(f"Processing item: {name}")
 
-            with open(config.categoriesDictFile,"r") as category_dict:
+            with open(config.CATEGORY_DICT_FILE,"r",encoding="utf-8") as category_dict:
                 category_dict = json.loads(category_dict.read())
                 if name in category_dict:
                     category = category_dict[f"{name}"]
@@ -72,8 +72,8 @@ class DatabaseConnector():
 
         self.send_to_receipt_table(receipt_name,total,discount,correct_date,time)
 
-    # Extracts item information from an item JSON object
     def extract_item_info(self,item):
+        """Extracts item information from an item JSON object"""
         name = item['name']
 
         # If there is a price per kilogram, extract this, otherwise extract the price
@@ -94,7 +94,7 @@ class DatabaseConnector():
         return name, price, quantity, cost
 
     def format_date_for_db(self,match):
-        # Format date to ISO format for database
+        """Format date to ISO format for database"""
         if match:
             year = f"20{match.group(3)}"
             month = match.group(2)
@@ -145,14 +145,4 @@ class DatabaseConnector():
         self.connection.close()
 
 if __name__ == '__main__':
-    with DatabaseConnector() as dbc:
-        test_date = '22/06/25'
-        date_pattern = re.compile(r'(\d+)/(\d+)/(\d+)')
-        match = re.search(date_pattern,test_date)
-        if match:
-            year = f"20{match.group(3)}"
-            month = match.group(2)
-            day = match.group(1)
-            iso_date = f"{year}-{month}-{day}"
-
-        d = date.fromisoformat(iso_date)
+    print("This module is not meant to be run directly")
