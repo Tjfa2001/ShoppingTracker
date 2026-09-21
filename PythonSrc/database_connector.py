@@ -1,7 +1,8 @@
+"""DatabaseConnector class"""
 import re
 import json
 from datetime import date
-import config
+import core.config as config
 import pyodbc
 
 class DatabaseConnector():
@@ -10,6 +11,7 @@ class DatabaseConnector():
 
     connection = None
     date_pattern = None
+
     logger = None
 
     def __init__(self,logger):
@@ -18,7 +20,7 @@ class DatabaseConnector():
         if logger:
             self.logger = logger
         self.log("Database connection established")
-        self.compile_regex()
+        self.compile_all_regex()
 
     def __enter__(self):
         # Set encoding for the connection
@@ -27,7 +29,7 @@ class DatabaseConnector():
         self.connection.setdecoding(pyodbc.SQL_WCHAR,encoding='utf-8')
         return self
 
-    def log(self,message: str):
+    def log(self, message: str):
         """Log a message via the Logger class"""
         if self.logger:
             self.logger.log_message(message)
@@ -52,7 +54,9 @@ class DatabaseConnector():
             discount=validated_receipt['discount']
 
         date_from_receipt=validated_receipt['date']
-        correct_date = date.fromisoformat(self.format_date_for_db(self.date_pattern.search(date_from_receipt)))
+        correct_date = date.fromisoformat(
+            self.format_date_for_db(self.date_pattern.search(date_from_receipt))
+        )
 
         for item in items:
             name, price, quantity, cost = self.extract_item_info(item)
@@ -68,7 +72,7 @@ class DatabaseConnector():
                     self.log(f"No category found for item: {name}")
                     category = ""
 
-            self.update_category(item_name=name,category=category)
+            self.update_category_for_item(item_name=name,category=category)
 
         self.send_to_receipt_table(receipt_name,total,discount,correct_date,time)
 
@@ -95,45 +99,53 @@ class DatabaseConnector():
 
     def format_date_for_db(self,match):
         """Format date to ISO format for database"""
+        iso_date = "2001-09-01"
         if match:
             year = f"20{match.group(3)}"
             month = match.group(2)
             day = match.group(1)
             iso_date = f"{year}-{month}-{day}"
         else:
-            iso_date = "2001-09-17"
+            self.log_error("Unable to format date in DatabaseConnector")
 
         return iso_date
 
     def send_to_item_table(self,receipt,item,price,quantity,cost):
+        """Send an item to the Postgres database table with its related information"""
         self.log(f"Sending item {item} to database")
         cur = self.connection.cursor()
         try:
-            cur.execute('CALL lidl.insert_item(?,?,?,?,?);',(receipt,item,price,quantity,cost))
+            cur.execute(config.INSERT_ITEM_INTO_DB_SQL,(receipt,item,price,quantity,cost))
         except pyodbc.DatabaseError as err:
             cur.rollback()
-            self.log_error(err.args[1])
+            self.log_error(f"Error sending {item} to the database: {err.args[1]}")
         finally:
             cur.commit()
 
-    def send_to_receipt_table(self,receipt,total,discount,date,time):
+    def send_to_receipt_table(self,receipt,total,discount,receipt_date,receipt_time):
+        """Send a receipt to the Postgres database table with its related information"""
         self.log(f"Sending receipt {receipt} to database")
         cur = self.connection.cursor()
         try:
-            cur.execute('CALL lidl.insert_receipt(?,?,?,?,?);',(receipt,total,discount,date,time))
+            cur.execute(
+                config.INSERT_RECEIPT_INTO_DB_SQL,
+                (receipt,total,discount,receipt_date,receipt_time)
+            )
         except pyodbc.DatabaseError as err:
             cur.rollback()
-            self.log_error(err.args[1])
+            self.log_error(f"Error sending {receipt} to the database: {err.args[1]}")
         finally:
             cur.commit()
 
-    def compile_regex(self):
+    def compile_all_regex(self):
+        """Compiles all regex for the DatabaseConnector class"""
         self.date_pattern = re.compile(r'(\d+)/(\d+)/(\d+)')
 
-    def update_category(self,item_name,category):
+    def update_category_for_item(self,item_name,category):
+        """Update the category for an item"""
         cur = self.connection.cursor()
         try:
-            cur.execute('CALL lidl.update_category(?,?);',(item_name,category))
+            cur.execute(config.UPDATE_CATEGORY_SQL,(item_name,category))
         except pyodbc.DatabaseError as err:
             cur.rollback()
             self.log_error(err.args[1])

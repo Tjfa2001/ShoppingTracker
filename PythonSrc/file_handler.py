@@ -4,7 +4,7 @@ import os
 import json
 import re
 from datetime import datetime
-import config
+import core.config as config
 
 class FileHandler():
     """

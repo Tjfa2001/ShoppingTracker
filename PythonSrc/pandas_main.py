@@ -4,7 +4,7 @@ import my_logger as logger
 import file_handler as fh
 import data_displayer as dd
 import pandas as pd
-import config as cf
+import ShoppingTracker.PythonSrc.core.config as cf
 import sqlalchemy as sqa
 import psycopg2
 import datetime as dt

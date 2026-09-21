@@ -11,7 +11,7 @@ import sqlalchemy as sqa
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import pandas as pd
-import config as cf
+import ShoppingTracker.PythonSrc.core.config as cf
 from DataDisplay import option_panel as op
 import matplotlib.pyplot as plt
 
@@ -52,7 +52,7 @@ class DataDisplayer():
 
         self.mode = StringVar()
 
-        self.loadSettings()
+        self.load_settings()
 
         # Content Frame is just a frame for the option panel and display panel to sit in
         self.make_content()
@@ -119,12 +119,12 @@ class DataDisplayer():
         display_panel = ttk.Frame(master=self.content,relief="sunken",borderwidth=15)
         self.display_panel = display_panel
 
-    def printcombo(self,event):
+    def print_combo(self,event):
         """Prints the combo box mode selected"""
         print(self.mode.get())
         print(event)
 
-    def loadSettings(self):
+    def load_settings(self):
         """Loads settings from the config file"""
         self.root.geometry(cf.DATA_DISPLAYER_GEOMETRY)
         self.root.title = cf.DATA_DISPLAYER_TITLE
@@ -137,12 +137,12 @@ class DataDisplayer():
             # Monthly
             case 1:
                 if self.first:
-                    self.extractMonthData(9,2025)
+                    self.extract_month_data(9,2025)
                     self.first = False
                 else:
                     month = int(input("What is the month you would like to look at?"))
                     year = int(input("What year would you like to look at?"))
-                    self.extractMonthData(month,year)
+                    self.extract_month_data(month,year)
             case _:
                 pass
 
@@ -194,7 +194,7 @@ class DataDisplayer():
         #toolbar.update()
         plt.show()
 
-    def extractMonthData(self,month:int, year:int):
+    def extract_month_data(self,month:int, year:int):
         monthsData = self.data[(self.data["month"]==month) & (self.data["year"]==year)]
         self.display_data_for_month(monthsData,month,year)
 

@@ -1,8 +1,11 @@
+"""Master Dictionary"""
+
 import os
 import json
-import config
+import ShoppingTracker.PythonSrc.core.config as config
 
 class MasterDict:
+    """Master Dictionary of items"""
 
     dictionary_location = None
     master = None
@@ -14,23 +17,27 @@ class MasterDict:
         self.load_file_to_json()
 
     def load_file_to_json(self):
+        """Loads the master to json"""
         self.mast_dict_json = json.loads(self.master)
 
     def get_directories(self):
+        """Retrieve all directories from the config file"""
         self.dictionary_location = config.MAST_DICT_LOC
 
-    def update(self,item_name,new_name):
+    def update(self, item_name:str, new_name: str) -> None:
+        """Updates the item's name in the dictionary"""
         self.mast_dict_json.update({item_name:new_name})
 
-    def remove_from_master(self,item_name):
+    def remove_from_master(self, item_name: str) -> None:
+        """Removes an item from the master dictionary"""
         self.mast_dict_json.pop(item_name)
 
     def write_to_file(self):
+        """Writes the dictionary to file"""
         with open(self.dictionary_location,"w",encoding="utf-8") as file:
             file.write(json.dumps(self.mast_dict_json,indent=4))
 
     def _read_from_file(self):
-
         """Reads the master dictionary in from the saved file"""
         file_exists = os.path.isfile(self.dictionary_location)
 
@@ -46,8 +53,8 @@ class MasterDict:
                 os.makedirs(os.path.dirname(self.dictionary_location), exist_ok=True)
                 with open(self.dictionary_location, "w",encoding="utf-8") as file:
                     file.write(self.master)
-            except Exception:
+            except OSError as e:
                 # If we can't write the file for some reason, keep master as an empty JSON string
-                pass
+                print(f"Error: {e.errno}")
 
 m = MasterDict()

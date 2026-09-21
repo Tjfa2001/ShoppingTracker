@@ -1,18 +1,19 @@
+"""Module docstring"""
+
+import os
+import re
+import json
 import pytesseract
 import cv2
 from PIL import Image
-import os
-import re
-import sys
-import json
 import file_handler as fh
-import numpy as np
-import config
+import ShoppingTracker.PythonSrc.core.config as config
+from ShoppingTracker.PythonSrc.ReceiptReaders.base import ReceiptReader
 
-class ReceiptReader:
+class LidlReceiptReader(ReceiptReader):
 
     """
-    Receipt Reader
+    Receipt Reader designed to read Lidl Receipts only
     """
 
     receipts = []
@@ -31,16 +32,16 @@ class ReceiptReader:
         self.log(message="Receipt reader initialized")
         self.file_handler = fh.FileHandler()
 
-    # Logs a message to the log file
-    def log(self,message):
+    def log(self, message):
+        """Logs a message to the log file"""
         if self.logger:
             self.logger.log_message(message)
             return True
         else:
             return False
 
-    # Retrieves the receipts from the receipts directory
     def get_receipts(self):
+        """Retrieves receipts from the receipts directory"""
 
         # Lists to hold the receipts to be processed and the excluded files
         receipts = []
@@ -71,10 +72,11 @@ class ReceiptReader:
 
         return receipts, excluded_files
 
-    # Checks the name of the file and renames it to the next in the sequence
-    def name_check(self,file):
 
-        # If this is the first time the function has been run, determine the next number in the sequence
+    def name_check(self, filename:str) -> str:
+        """Checks the name of the file and renames it to the next in the sequence"""
+
+        # If first time function has been run, determine the next number in the sequence
         if self.first_name_check:
 
             self.first_name_check = False
@@ -106,7 +108,7 @@ class ReceiptReader:
             self.next_receipt_number = next_number + 1
 
         # Retrieves the file extension
-        file_extension = self.extension_pattern.search(file)
+        file_extension = self.extension_pattern.search(filename)
 
         # Renames the file to the next in the sequence, maintaining the extension
         new_receipt_name = f"lidl_receipt{next_number}.{file_extension.group(2)}"
@@ -276,8 +278,8 @@ class ReceiptReader:
 
         return json_receipt
 
-    def retrieve_receipt_date(self,line,receipt_dict):
-        # Looks for the date on the receipt
+    def retrieve_receipt_date(self, line:str, receipt_dict:dict[str,str]) -> bool:
+        """Looks for the date on the receipt"""
         date = self.date_search.search(line)
 
         if date:
@@ -287,7 +289,7 @@ class ReceiptReader:
             return False
 
     def retrieve_receipt_time(self,line,receipt_dict):
-        # Looks for the time on the receipt
+        """Looks for the time on the receipt"""
         time = self.time_search.search(line)
 
         if time:

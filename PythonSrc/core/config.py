@@ -35,6 +35,7 @@ DB_CONN_STR = """Driver={PostgreSQL UNICODE};
 DATA_DISPLAYER_GEOMETRY = '2000x1000'
 DATA_DISPLAYER_TITLE = 'Toms Data Displayer'
 
+# SQL Variables
 MONTHLY_DATA_SQL = """
     SELECT
     i.category,
@@ -50,3 +51,7 @@ MONTHLY_DATA_SQL = """
     date_part('month',r.date),
     date_part('year',r.date), i.category;
     """
+
+INSERT_ITEM_INTO_DB_SQL = "CALL lidl.insert_item(?,?,?,?,?);"
+INSERT_RECEIPT_INTO_DB_SQL ='CALL lidl.insert_receipt(?,?,?,?,?);'
+UPDATE_CATEGORY_SQL = "CALL lidl.update_category(?,?);"
