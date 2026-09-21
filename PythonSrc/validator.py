@@ -1,9 +1,15 @@
+"""Code relating to the validation of processed receipts"""
+
+import json
 import master_dictionary as mast
 import name_selector as ns
-import json
 
 class Validator():
 
+    """
+    Utility class to validate that a receipt has been read and
+    processed correctly
+    """
     mast_dict_json = None
     mast_dict_obj = None
     logger = None
@@ -14,6 +20,7 @@ class Validator():
         self.logger = logger
 
     def validate_receipt(self,json_receipt):
+        """Validates a receipt by checking certain qualities"""
 
         totals_match = self.check_totals(json_receipt)
         if totals_match:
@@ -26,6 +33,11 @@ class Validator():
         return item_lookup
 
     def lookup_items(self,json_receipt):
+        """
+        Looks items up in master dictionary and gets the user to
+        select a category for the item if it isn't in the dictionary
+
+        Returns: Dictionary of items and categories"""
 
         # Gets the items from the json receipt
         dictionary = json.loads(json_receipt)
@@ -57,29 +69,37 @@ class Validator():
 
         return dictionary
 
-    def check_totals(self,json_receipt):
+    def check_totals(self, json_receipt: str) -> bool:
+        """
+        Checks the total value of a receipt to ensure that it
+        matches the values returned by OCR processing
+        """
+        receipt = json.loads(json_receipt)
 
-            receipt = json.loads(json_receipt)
+        if 'total' not in receipt:
+            return False
+        else:
+            total_for_receipt = float(receipt["total"])
 
-            if 'total' not in receipt:
-                return False
+        item_sum_for_receipt = 0
+
+        for item in receipt["items"]:
+
+            if 'quantity' in item:
+                item_sum_for_receipt += float(item["price"])*float(item["quantity"])
             else:
-                total_for_receipt = float(receipt["total"])
+                item_sum_for_receipt += float(item["price"])
 
-            item_sum_for_receipt = 0
-
-            for item in receipt["items"]:
-
-                if 'quantity' in item:
-                    item_sum_for_receipt += float(item["price"])*float(item["quantity"])
-                else:
-                    item_sum_for_receipt += float(item["price"])
-
-            if round(total_for_receipt,2) == round(item_sum_for_receipt,2):
-                return True
-            else:
-                self.log_message(f"Total {total_for_receipt} does not match sum of items {item_sum_for_receipt}")
-                return False
+        if round(total_for_receipt,2) == round(item_sum_for_receipt,2):
+            return True
+        self.log_message(
+        f"Total {total_for_receipt} does not match sum of items {item_sum_for_receipt}"
+        )
+        return False
 
     def log_message(self,message):
-        self.logger.log_message(message)
+        """Logs a message to the application log"""
+        if self.logger:
+            self.logger.log_message(message)
+        else:
+            raise AttributeError("Logger not found in Validator class")

@@ -1,5 +1,5 @@
 import pytest
-from PythonSrc import receipt_reader as rr
+from ShoppingTracker.PythonSrc.ReceiptReaders import lidl_receipt_reader as rr
 from PythonSrc import my_logger as l
 from PythonSrc import file_handler as fh
 import datetime
@@ -9,7 +9,7 @@ import re
 @pytest.fixture
 def receipt_reader():
     """A receipt reader object instantialised only"""
-    return rr.ReceiptReader(l.Logger(fh.FileHandler()))
+    return rr.LidlReceiptReader(l.Logger(fh.FileHandler()))
 
 @pytest.mark.parametrize("file_name, expected",[("receipt.jpg",True),("receipt.x",False),("receipt.jpeg",True),("receipt.png",True),("receipt",False)])
 def test_file_extension_check_regex(receipt_reader, file_name, expected):

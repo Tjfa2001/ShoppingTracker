@@ -4,7 +4,7 @@ import my_logger as logger
 import file_handler as fh
 import data_displayer as dd
 import pandas as pd
-import config as cf
+import ShoppingTracker.PythonSrc.core.config as cf
 import sqlalchemy as sqa
 import psycopg2
 import datetime as dt
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     """
 
     # You can uncomment this to get the GUI to pop up
-    data_disp = dd.DataDisplayer(connect,sql=cf.monthSQL)
+    data_disp = dd.DataDisplayer(connect,sql=cf.MONTHLY_DATA_SQL)
     """
     df = pd.read_csv('dataframe_with_dates.csv')
     df['date'] = pd.to_datetime(df['date'])

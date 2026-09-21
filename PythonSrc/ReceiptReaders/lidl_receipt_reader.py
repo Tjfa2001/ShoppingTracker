@@ -1,28 +1,29 @@
+"""Module docstring"""
+
+import os
+import re
+import json
 import pytesseract
 import cv2
 from PIL import Image
-import os
-import re
-import sys
-import json
 import file_handler as fh
-import numpy as np
-import config
+import ShoppingTracker.PythonSrc.core.config as config
+from ShoppingTracker.PythonSrc.ReceiptReaders.base import ReceiptReader
 
-class ReceiptReader:
+class LidlReceiptReader(ReceiptReader):
 
     """
-    Receipt Reader
+    Receipt Reader designed to read Lidl Receipts only
     """
 
     receipts = []
     logger = None
     file_handler = None
     first_name_check = True
-    abspath = os.path.join(config.projectDirectory)
-    receipt_dir = config.receiptsDirectory
-    excluded_dir = config.excludedReceiptsDirectory
-    accepted_dir = config.acceptedReceiptsDirectory
+    abspath = os.path.join(config.PROJ_DIR)
+    receipt_dir = config.INPUT_RECEIPT_DIR
+    excluded_dir = config.EXCL_RECEIPT_DIR
+    accepted_dir = config.ACC_RECEIPT_DIR
     next_receipt_number = 0
 
     def __init__(self,logger):
@@ -31,16 +32,16 @@ class ReceiptReader:
         self.log(message="Receipt reader initialized")
         self.file_handler = fh.FileHandler()
 
-    # Logs a message to the log file
-    def log(self,message):
+    def log(self, message):
+        """Logs a message to the log file"""
         if self.logger:
             self.logger.log_message(message)
             return True
         else:
             return False
 
-    # Retrieves the receipts from the receipts directory
     def get_receipts(self):
+        """Retrieves receipts from the receipts directory"""
 
         # Lists to hold the receipts to be processed and the excluded files
         receipts = []
@@ -65,16 +66,17 @@ class ReceiptReader:
                     self.file_handler.rename(os.path.join(self.receipt_dir,new_name),os.path.join(self.receipt_dir,file))
                 receipts.append(new_name)
             else:
-                self.log.log_message(f"Excluding file: {file}")
+                self.log(f"Excluding file: {file}")
                 excluded_files.append(file)
                 self.file_handler.exclude(file)
 
         return receipts, excluded_files
 
-    # Checks the name of the file and renames it to the next in the sequence
-    def name_check(self,file):
 
-        # If this is the first time the function has been run, determine the next number in the sequence
+    def name_check(self, filename:str) -> str:
+        """Checks the name of the file and renames it to the next in the sequence"""
+
+        # If first time function has been run, determine the next number in the sequence
         if self.first_name_check:
 
             self.first_name_check = False
@@ -106,38 +108,43 @@ class ReceiptReader:
             self.next_receipt_number = next_number + 1
 
         # Retrieves the file extension
-        file_extension = self.extension_pattern.search(file)
+        file_extension = self.extension_pattern.search(filename)
 
         # Renames the file to the next in the sequence, maintaining the extension
         new_receipt_name = f"lidl_receipt{next_number}.{file_extension.group(2)}"
 
         return new_receipt_name
 
-    # Checks whether the file can be opened
-    def open_photo_check(self,file,dir):
-        try:
-            Image.open(os.path.join(dir,file))
-            self.log(f"File {file} passed image opening test")
-            return True
-        except:
-            self.log(f"File {file} failed image opening test")
-        return False
+    def open_photo_check(self,file,directory):
 
-    # Chceks whether the file has the right extension for a photo
+        """Checks whether the file can be opened as an image"""
+
+        success = False
+        try:
+            Image.open(os.path.join(directory,file))
+            self.log(f"File {file} passed image opening test")
+            success = True
+        except IOError:
+            self.log(f"File {file} failed image opening test")
+        return success
+
     def file_extension_check(self,file):
 
+        """Checks whether the file has the right extension for a photo"""
         right_extension = self.extension_check.search(file)
+        success = False
 
         if right_extension:
             self.log(f"File {file} passed extension test")
-            return True
+            success = False
         else:
             self.log(f"File {file} failed extension test")
-            return False
 
-    # Reads the receipt provided to the file
+        return success
+
     def read_receipt(self,receipt):
 
+        """Reads the receipt provided to the file"""
         file_path = self.receipt_dir
         path=file_path+"\\"+receipt
 
@@ -163,8 +170,8 @@ class ReceiptReader:
 
         return json_receipt
 
-    # Compiles the regex that will be used when extracting items
     def compile_regex(self):
+        """Compiles the regex that will be used when extracting items"""
         self.extension_check = re.compile(r'(.+)\.(jpg|jpeg|png)',re.IGNORECASE)
         self.time_search = re.compile(r"(Time:\s+)(\d{2}:\d{2}:\d{2})")
         self.date_search = re.compile(r"(Date:\s+)(\d{2}\/\d{2}\/\d{2})")
@@ -177,9 +184,8 @@ class ReceiptReader:
         self.name_pattern = re.compile(r'(lidl_receipt)(\d+)\.(jpg|jpeg|png)',re.IGNORECASE)
         self.extension_pattern = re.compile(r'(.+)\.(jpg|jpeg|png)$',re.IGNORECASE)
 
-    # Extracts the items from the receipt text
     def extract_items(self,text):
-
+        """Extracts the items from the receipt text"""
         receipt_dict = {}
         items = []
         items_dict = {}
@@ -187,74 +193,77 @@ class ReceiptReader:
 
         for i, line in enumerate(text):
 
-               # Looks for any reference to price / cost
-               match = self.item_search.search(line)
+            # Looks for any reference to price / cost
+            match = self.item_search.search(line)
 
-               if match:
+            if match:
 
-                   # Retrieves the total cost on the receipt
-                   total_cost = self.total_search.search(match.group())
+                # Retrieves the total cost on the receipt
+                total_cost = self.total_search.search(match.group())
 
-                   # Retrieves the total discount on the receipt
-                   total_discount = self.discount_search.search(match.group())
+                # Retrieves the total discount on the receipt
+                total_discount = self.discount_search.search(match.group())
 
-                   if total_discount:
-                       receipt_dict.update({"discount":f"{total_discount.group(2)}"})
-                       break
+                if total_discount:
+                    receipt_dict.update({"discount":f"{total_discount.group(2)}"})
+                    break
 
-                   elif total_cost:
-                       receipt_dict.update({"total":f"{total_cost.group(3)}"})
+                elif total_cost:
+                    receipt_dict.update({"total":f"{total_cost.group(3)}"})
 
-                   elif not total_cost:
+                elif not total_cost:
 
-                       quantity_check = self.quantity_check.search(line)
+                    quantity_check = self.quantity_check.search(line)
 
-                       if i != num_rows:
-                           weight_check_next = self.weight_check.search(text[i+1])
-                       else:
-                           weight_check_next = False
+                    if i != num_rows:
+                        weight_check_next = self.weight_check.search(text[i+1])
+                    else:
+                        weight_check_next = False
 
-                       weight_check_current = self.weight_check.search(line)
+                    weight_check_current = self.weight_check.search(line)
 
-                       # Introduced as part of LidlTotalFix
-                       card_cost = self.payment_search.search(line)
+                    # Introduced as part of LidlTotalFix
+                    card_cost = self.payment_search.search(line)
 
-                       # Checks whether there is a quantity given for the item bought
-                       if quantity_check:
-                           price = float(match.group(2)) / int(quantity_check.group(1))
-                           items.append({"name":f"{match.group(1).replace(quantity_check.group(),"")}".strip(),
-                                         "price":f"{price}","quantity":f"{quantity_check.group(1)}"})
+                    # Checks whether there is a quantity given for the item bought
+                    if quantity_check:
+                        price = float(match.group(2)) / int(quantity_check.group(1))
+                        items.append(
+                            {
+                                "name": match.group(1).replace(quantity_check.group(), "").strip(),
+                                "price": str(price),
+                                "quantity": quantity_check.group(1),
+                            }
+                        )
 
-                       # Checks whether there is a weight given for the item bought
-                       elif weight_check_next:
-                           weight_bought = float(weight_check_next.group(1))
-                           items.append({"name":f"{match.group(1)}".strip(),
-                                         "price":f"{match.group(2)}",
-                                         "weight":f"{weight_bought}",
-                                         "ppkg":f"{weight_check_next.group(3)}"})
+                    # Checks whether there is a weight given for the item bought
+                    elif weight_check_next:
+                        weight_bought = float(weight_check_next.group(1))
+                        items.append({"name":f"{match.group(1)}".strip(),
+                                      "price":f"{match.group(2)}",
+                                      "weight":f"{weight_bought}",
+                                      "ppkg":f"{weight_check_next.group(3)}"})
 
-                       # Checks whether the current item is just a weight, in which case skip
-                       elif weight_check_current:
-                           continue
+                    # Checks whether the current item is just a weight, in which case skip
+                    elif weight_check_current:
+                        continue
+                    elif card_cost:
+                        receipt_dict.update({"total":f"{card_cost.group(3)}"})
 
-                       elif card_cost:
-                           receipt_dict.update({"total":f"{card_cost.group(3)}"})
+                    # In general, add the name and price only
+                    else:
+                        items.append({"name":f"{match.group(1)}".strip(),
+                                      "price":f"{match.group(2)}"})
+                else:
+                    continue
 
-                       # In general, add the name and price only
-                       else:
-                           items.append({"name":f"{match.group(1)}".strip(),
-                                         "price":f"{match.group(2)}"})
-                   else:
-                       continue
+            self.retrieve_receipt_date(line,receipt_dict)
 
-               self.retrieve_receipt_date(line,receipt_dict)
+            self.retrieve_receipt_total_cost(line,receipt_dict)
 
-               self.retrieve_receipt_total_cost(line,receipt_dict)
-
-               end_of_receipt = self.retrieve_receipt_time(line,receipt_dict)
-
-               if end_of_receipt:
-                   break
+            end_of_receipt = self.retrieve_receipt_time(line,receipt_dict)
+            if end_of_receipt:
+                break
 
         # Constructs the dictionary for the receipt
         items_dict.update({"items":items})
@@ -269,8 +278,8 @@ class ReceiptReader:
 
         return json_receipt
 
-    def retrieve_receipt_date(self,line,receipt_dict):
-        # Looks for the date on the receipt
+    def retrieve_receipt_date(self, line:str, receipt_dict:dict[str,str]) -> bool:
+        """Looks for the date on the receipt"""
         date = self.date_search.search(line)
 
         if date:
@@ -280,7 +289,7 @@ class ReceiptReader:
             return False
 
     def retrieve_receipt_time(self,line,receipt_dict):
-        # Looks for the time on the receipt
+        """Looks for the time on the receipt"""
         time = self.time_search.search(line)
 
         if time:
